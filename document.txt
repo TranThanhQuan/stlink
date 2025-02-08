@@ -1,2 +1,5494 @@
                     PROJECT Shorten Link
                     laravel 10 + Vue3
+
+
+I.PHÂN TÍCH DỰ ÁN
+
+🔹 1. Chức năng của User (Người dùng thường)
+    🔹 Quản lý tài khoản
+        Đăng ký tài khoản bằng email (có xác thực email).
+        Đăng nhập bằng email/password hoặc Google OAuth.
+        Quên mật khẩu và đặt lại mật khẩu qua email.
+        Chỉnh sửa hồ sơ cá nhân (tên, email, avatar).
+    🔹 Quản lý link rút gọn
+        Rút gọn link (giới hạn số lượng link).
+        Quản lý danh sách link rút gọn đã tạo.
+        Chỉnh sửa hoặc xóa link.
+        Xem số lượt click trên mỗi link.
+        Copy link rút gọn nhanh.
+        Thêm mật khẩu bảo vệ link.
+        Tự động tạo QR Code cho link rút gọn.
+    🔹 Xem thống kê cơ bản
+        Xem tổng số lượt click của từng link.
+        Xem nguồn truy cập (Facebook, Google, Direct...).
+        Xem thiết bị truy cập (PC, Mobile, Tablet).
+        Xem quốc gia của người truy cập.
+🔹 2. Chức năng của Premium User (Người dùng trả phí)
+    Bao gồm tất cả chức năng của User + các chức năng nâng cao:
+
+    🔹 Tùy chỉnh link rút gọn
+        Được phép tùy chỉnh slug (VD: domain.com/my-link).
+        Được phép chỉnh sửa link đích sau khi tạo.
+        Thiết lập link hết hạn theo thời gian (tự động vô hiệu sau X ngày).
+        Thiết lập link hết hạn theo số lượt click (hết X click thì vô hiệu).
+        Đặt mật khẩu bảo vệ link.
+        Chặn IP hoặc quốc gia không được truy cập link.
+    🔹 Thống kê chi tiết
+        Xem biểu đồ thống kê lượt click theo ngày/tháng.
+        Xem tỉ lệ truy cập từ từng nguồn (Facebook, Ads, Google, Direct...).
+        Xem danh sách IP & địa chỉ quốc gia của người truy cập.
+        Xem danh sách trình duyệt & hệ điều hành của người truy cập.
+    🔹 API & Tích hợp
+        API riêng để tạo link rút gọn thông qua REST API.
+        Webhook để nhận thông báo khi có click mới.
+        Export dữ liệu thống kê ra CSV/Excel.
+🔹 3. Chức năng của Admin
+    🔹 Quản lý người dùng
+        Xem danh sách User & Premium User.
+        Cập nhật thông tin, nâng cấp user lên Premium.
+        Chặn, xóa, hoặc vô hiệu hóa tài khoản user.
+        Quản lý danh sách thanh toán của Premium User.
+    🔹 Quản lý link rút gọn
+        Xem danh sách tất cả link rút gọn trong hệ thống.
+        Xóa hoặc vô hiệu hóa link vi phạm.
+        Kiểm tra link có chứa nội dung độc hại (phishing, spam, virus).
+        Báo cáo & phân tích số lượng link rút gọn trong hệ thống.
+    🔹 Quản lý thống kê hệ thống
+        Xem tổng số lượt click trên toàn hệ thống.
+        Xem số lượng link rút gọn theo từng ngày.
+        Xem danh sách nguồn truy cập phổ biến nhất.
+        Xem thiết bị, trình duyệt & quốc gia truy cập phổ biến nhất.
+    🔹 Quản lý phân quyền
+        Tạo & chỉnh sửa các nhóm quyền (ví dụ: User, Premium, Moderator).
+        Cấu hình quyền truy cập cho từng nhóm.
+        Phân quyền cụ thể cho từng user.
+🔹 4. Chức năng mở rộng & nâng cao
+    🔹 Hệ thống kiếm tiền từ link rút gọn
+        Đặt quảng cáo trước khi redirect (interstitial ads).
+        Tính toán thu nhập dựa trên CPM/CPC.
+        Cho phép user rút tiền nếu đạt mức tối thiểu.
+    🔹 Tích hợp chatbot & thông báo
+        Gửi thông báo khi link đạt số lượt click nhất định.
+        Gửi email báo cáo lượt click hàng tuần/tháng.
+        Tích hợp chatbot hỗ trợ khách hàng qua Messenger/Zalo.
+
+
+Phương án xử lý khi link hết hạn
+
+Chuyển hướng đến trang thông báo lỗi (expired-link).
+Nội dung trang:
+🔴 Thông báo link đã hết hạn: "Liên kết này không còn khả dụng."
+📌 Gợi ý hành động: Nếu người tạo link là chính chủ, cho phép họ tạo lại.
+
+public function redirectToShortLink($short_code)
+{
+    $link = ShortLink::where('short_code', $short_code)->first();
+
+    if (!$link) {
+        abort(404, 'Liên kết không tồn tại.');
+    }
+
+    if ($link->expires_at && $link->expires_at <= now()) {
+        return response()->view('errors.expired-link', compact('link'), 410);
+    }
+
+    return redirect()->away($link->original_url);
+}
+
+
+    hoặc
+
+    Chuyển hướng về trang chủ hoặc trang landing
+    Nếu không muốn hiển thị lỗi, có thể chuyển hướng về trang chủ:
+    Tốt cho SEO, tránh lỗi 404 nhiều trên website.
+
+
+    return redirect()->route('home')->with('error', 'Liên kết này đã hết hạn.');
+
+///////     Các lỗi có thể xảy ra  /////////////
+
+Các lỗi có thể xảy ra khi vận hành hệ thống rút gọn link
+📌 1. Lỗi liên quan đến link rút gọn
+        1.1. Link không tồn tại (404)
+        Nguyên nhân: Người dùng nhập sai mã rút gọn hoặc link đã bị xóa.
+        Cách xử lý: Hiển thị trang lỗi 404 với thông báo: "Liên kết không tồn tại."
+        1.2. Link đã hết hạn (410)
+        Nguyên nhân: Link đã hết hạn theo chính sách (10 ngày với user, tùy chỉnh với Premium).
+        Cách xử lý: Hiển thị trang lỗi 410 hoặc cho phép Premium tạo lại link.
+        1.3. Link bị vô hiệu hóa
+        Nguyên nhân: Admin tắt link do vi phạm chính sách.
+        Cách xử lý: Hiển thị thông báo: "Liên kết này đã bị vô hiệu hóa bởi quản trị viên."
+        1.4. Chuyển hướng sai URL
+        Nguyên nhân: Link bị lỗi do sai dữ liệu khi nhập vào.
+        Cách xử lý: Kiểm tra dữ liệu, validate URL trước khi lưu.
+📌 2. Lỗi liên quan đến người dùng
+        2.1. Không đăng nhập được
+        Nguyên nhân: Sai mật khẩu hoặc tài khoản bị khóa.
+        Cách xử lý: Hiển thị lỗi cụ thể, thêm chức năng quên mật khẩu.
+        2.2. Không xác thực được tài khoản
+        Nguyên nhân: Email xác thực không đến hộp thư.
+        Cách xử lý: Cho phép gửi lại email xác thực.
+        2.3. Không tạo được link
+        Nguyên nhân: User bị giới hạn số lượng link/ngày.
+        Cách xử lý: Thông báo số lượng tối đa user có thể tạo.
+        2.4. Premium không đặt được thời gian hết hạn
+        Nguyên nhân: Nhập sai định dạng thời gian.
+        Cách xử lý: Validate đầu vào của expires_at.
+📌 3. Lỗi bảo mật & tấn công hệ thống
+        3.1. Spam tạo link hàng loạt
+        Nguyên nhân: Bot hoặc user lạm dụng API.
+        Cách xử lý: Giới hạn số lần tạo link theo IP/user trong 1 giờ.
+        3.2. SQL Injection
+        Nguyên nhân: Nhập dữ liệu không an toàn vào database.
+        Cách xử lý: Dùng Laravel Query Builder hoặc Eloquent để tránh SQL Injection.
+        3.3. XSS Attack
+        Nguyên nhân: User nhập script vào URL hoặc custom alias.
+        Cách xử lý: Encode output, dùng htmlspecialchars().
+        3.4. CSRF Attack
+        Nguyên nhân: Người dùng bị tấn công qua form không bảo mật.
+        Cách xử lý: Sử dụng CSRF Token trong form.
+📌 4. Lỗi liên quan đến hiệu suất & dữ liệu
+        4.1. Tốc độ chậm khi truy vấn dữ liệu
+        Nguyên nhân: Dữ liệu quá lớn, không có index.
+        Cách xử lý: Tạo index trên short_code, expires_at, created_at.
+        4.2. Lượng truy cập cao gây quá tải
+        Nguyên nhân: Không có caching hoặc load balancing.
+        Cách xử lý: Sử dụng Redis để cache, tối ưu database, CDN.
+        4.3. Không đếm đúng lượt click
+        Nguyên nhân: Request bị trùng hoặc bị chặn.
+        Cách xử lý: Chống spam bằng IP hoặc session.
+📌 5. Lỗi liên quan đến thanh toán (nếu có gói Premium)
+        5.1. Không nâng cấp được Premium
+        Nguyên nhân: Lỗi thanh toán.
+        Cách xử lý: Kiểm tra cổng thanh toán, log lỗi để xử lý.
+        5.2. Mất quyền Premium sau khi gia hạn
+        Nguyên nhân: Lỗi cập nhật trạng thái tài khoản.
+        Cách xử lý: Kiểm tra cron job xử lý gia hạn gói Premium.
+📌 6. Lỗi liên quan đến tracking & phân tích
+        6.1. Không nhận diện đúng nguồn traffic
+        Nguyên nhân: Referrer bị chặn bởi trình duyệt hoặc adblock.
+        Cách xử lý: Thêm tracking UTM, sử dụng server-side tracking.
+        6.2. Thống kê lượt click không chính xác
+        Nguyên nhân: Do bot hoặc người dùng truy cập ảo.
+        Cách xử lý: Lọc bot dựa trên user-agent, giới hạn click từ cùng IP trong thời gian ngắn.
+
+
+
+🔹 Công Nghệ Sử dụng
+
+
+ Backend (Server-side)
+✅ Laravel – Framework PHP chính để xây dựng API và xử lý backend.
+✅ Inertia.js – Kết hợp Laravel & Vue.js mà không cần API thuần túy.
+✅ MySQL – Hệ quản trị cơ sở dữ liệu để lưu link rút gọn, người dùng, thống kê.
+✅ Laravel Breeze – Hỗ trợ authentication (đăng nhập, đăng ký, reset mật khẩu).
+✅ Laravel Sanctum – Cung cấp bảo mật API cho Premium Users.
+✅ Jenssegers Agent – Xác định thiết bị & trình duyệt của người truy cập.
+✅ GeoIP2 – Xác định quốc gia, thành phố của người truy cập từ IP.
+✅ Queue & Job – Xử lý tracking lượt click, gửi email mà không ảnh hưởng hiệu suất.
+
+
+
+🔹 Frontend (Client-side)
+✅ Vue.js 3 – Framework frontend chính để xây dựng giao diện.
+✅ TailwindCSS – Thiết kế UI linh hoạt, nhẹ, dễ tùy chỉnh.
+✅ Chart.js – Hiển thị biểu đồ thống kê số lượt click, nguồn truy cập.
+✅ Axios – Gửi và nhận dữ liệu giữa frontend & backend.
+✅ Vue Router – Điều hướng trang trong frontend.
+✅ Pinia – Quản lý state thay vì Vuex (nhẹ hơn, dễ dùng hơn).
+✅ QR Code Generator – Tạo mã QR từ link rút gọn.
+
+
+
+
+🔹 Authentication & Bảo mật
+✅ Google OAuth – Hỗ trợ đăng nhập bằng Google.
+✅ Laravel Throttle – Giới hạn số lần request tránh spam.
+✅ CSRF & XSS Protection – Bảo vệ form và API khỏi tấn công.
+✅ reCAPTCHA – Chống bot khi đăng ký tài khoản.
+
+
+🔹 DevOps & Deploy
+✅ Docker – Chạy môi trường phát triển đồng nhất.
+✅ Redis – Cache dữ liệu, tăng tốc truy vấn.
+✅ Supervisor – Quản lý Queue & Job xử lý lượt click.
+✅ Nginx / Apache – Web server để chạy Laravel.
+✅ GitHub Actions – CI/CD để deploy tự động.
+✅ VPS / Cloud (AWS, DigitalOcean, Linode, Vultr,...) – Triển khai hệ thống.
+
+
+🔹 Công cụ hỗ trợ & Debug
+✅ Laravel Debugbar – Debug query và hiệu suất ứng dụng.
+✅ Postman – Kiểm thử API.
+✅ Sentry / Bugsnag – Theo dõi lỗi real-time.
+
+
+
+🎯 Tổng kết
+📌 Backend: Laravel, Inertia.js, MySQL, Sanctum.
+📌 Frontend: Vue.js 3, TailwindCSS, Chart.js.
+📌 Bảo mật: Google OAuth, CSRF, XSS, Throttle.
+📌 Deploy: Docker, Redis, Supervisor, VPS.
+
+
+
+
+////////  PERMIISSION      /////////
+
+Các quyền sẽ được lưu trong database (bảng permissions), sau đó Admin có thể bật/tắt từng quyền cho User hoặc Premium.
+
+Danh sách quyền (Permissions)
+🔹 Quản lý tài khoản
+✅ manage_users – Xem danh sách user.
+✅ edit_users – Chỉnh sửa thông tin user.
+✅ delete_users – Xóa hoặc vô hiệu hóa tài khoản.
+✅ upgrade_users – Nâng cấp user lên Premium.
+✅ ban_users – Cấm user vi phạm.
+
+🔹 Quản lý link rút gọn
+✅ create_links – Tạo link rút gọn.
+✅ edit_links – Chỉnh sửa link rút gọn.
+✅ delete_links – Xóa link rút gọn.
+✅ custom_slug – Tạo slug tùy chỉnh (VD: domain.com/my-link).
+✅ set_expiry_links – Thiết lập link hết hạn theo thời gian/click.
+✅ protect_links – Đặt mật khẩu bảo vệ link.
+✅ block_countries – Chặn IP hoặc quốc gia không được truy cập.
+
+🔹 Quản lý thống kê & tracking
+✅ view_analytics – Xem số lượt click.
+✅ view_referrer_stats – Xem nguồn truy cập (Facebook, Google, Ads…).
+✅ view_device_stats – Xem thiết bị truy cập (PC, Mobile, Tablet).
+✅ view_country_stats – Xem danh sách quốc gia truy cập.
+✅ export_data – Xuất dữ liệu thống kê ra file CSV/Excel.
+
+🔹 Quản lý hệ thống
+✅ view_all_links – Xem tất cả link rút gọn trong hệ thống.
+✅ delete_any_links – Xóa link vi phạm.
+✅ view_reports – Xem báo cáo hệ thống.
+✅ manage_settings – Cấu hình hệ thống (tên, logo, domain…).
+✅ manage_ads – Quản lý quảng cáo trên link rút gọn.
+
+🔹 Quản lý quyền & phân quyền
+✅ assign_roles – Gán quyền cho user.
+✅ create_roles – Tạo nhóm quyền mới.
+✅ edit_roles – Chỉnh sửa quyền của nhóm.
+✅ delete_roles – Xóa nhóm quyền.
+
+
+
+
+
+
+
+II. Thiết kế database
+
+
+📌 1. Bảng users (Lưu thông tin người dùng)
+
+        CREATE TABLE users (
+            id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            name          VARCHAR(255) NOT NULL,
+            email         VARCHAR(255) UNIQUE NOT NULL,
+            password      VARCHAR(255) NULL, -- Nếu đăng nhập bằng Google thì có thể NULL
+            provider      ENUM('email', 'google') DEFAULT 'email', -- Phương thức đăng nhập
+            provider_id   VARCHAR(255) NULL, -- Lưu ID khi đăng nhập bằng Google
+            role          ENUM('user', 'premium', 'moderator', 'admin') DEFAULT 'user',
+            created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+
+
+
+📌 2. Bảng short_links (Lưu link rút gọn)
+
+        CREATE TABLE short_links (
+            id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            user_id       BIGINT UNSIGNED NOT NULL,
+            short_code    VARCHAR(20) UNIQUE NOT NULL, -- Mã rút gọn
+            original_url  TEXT NOT NULL, -- URL gốc
+            created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expires_at    TIMESTAMP NULL, -- User thường mặc định 10 ngày, Premium tự chọn
+            status        ENUM('active', 'expired', 'disabled') DEFAULT 'active', -- Trạng thái
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+
+📌 3. Bảng click_statistics (Lưu lịch sử truy cập link)
+
+        CREATE TABLE click_statistics (
+            id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            short_link_id BIGINT UNSIGNED NOT NULL,
+            ip_address    VARCHAR(45) NOT NULL,
+            user_agent    TEXT NOT NULL,
+            referrer      ENUM('facebook', 'google', 'ads', 'other') DEFAULT 'other', -- Nguồn truy cập
+            device_type   ENUM('mobile', 'tablet', 'pc') NOT NULL, -- Phân loại thiết bị
+            os           VARCHAR(50) NOT NULL, -- Hệ điều hành (iOS, Android, Windows,...)
+            country       VARCHAR(100) NULL, -- Quốc gia truy cập
+            clicked_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Thời gian truy cập
+            FOREIGN KEY (short_link_id) REFERENCES short_links(id) ON DELETE CASCADE
+        );
+
+
+📌 4. Bảng permissions (Lưu danh sách quyền)
+
+        CREATE TABLE permissions (
+            id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            code        VARCHAR(50) UNIQUE NOT NULL, -- Mã quyền (vd: manage_users)
+            name        VARCHAR(255) NOT NULL, -- Tên quyền
+            description TEXT NULL -- Mô tả quyền
+        );
+
+
+
+📌 5. Bảng role_permissions (Phân quyền cho vai trò)
+
+        CREATE TABLE role_permissions (
+            id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            role          ENUM('user', 'premium', 'moderator', 'admin') NOT NULL,
+            permission_id BIGINT UNSIGNED NOT NULL,
+            FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+        );
+
+
+📌 6. Bảng user_payments (Lưu lịch sử thanh toán của Premium)
+
+        CREATE TABLE user_payments (
+            id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            user_id      BIGINT UNSIGNED NOT NULL,
+            amount       DECIMAL(10,2) NOT NULL, -- Số tiền thanh toán
+            payment_method ENUM('credit_card', 'paypal', 'bank_transfer') NOT NULL,
+            status       ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+            created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+📌 7. Index để tối ưu truy vấn
+
+        CREATE INDEX idx_short_code ON short_links(short_code);
+        CREATE INDEX idx_expires_at ON short_links(expires_at);
+        CREATE INDEX idx_clicked_at ON click_statistics(clicked_at);
+        CREATE INDEX idx_referrer ON click_statistics(referrer);
+
+
+
+
+
+
+
+
+
+I. Tạo và config dự án
+1. Tạo dự án
+    composer create-project laravel/laravel ten_project "10.*"
+
+    cd ten_project
+
+    Cài đặt Laravel Breeze
+            composer require laravel/breeze --dev
+
+    Cài đặt Breeze với Vue
+            php artisan breeze:install vue
+
+    Cài đặt NPM Packages và build
+            npm install && npm run dev
+
+
+2. Config
+    - .env database, chạy migrate
+    - Tạo .htaccess file
+            <IfModule mod_rewrite.c>
+                RewriteEngine On
+
+                # Rewrite all requests to the public directory
+                RewriteRule ^(.*)$ public/$1 [L]
+            </IfModule>
+
+II. Tạo migration
+
+Bảng	        Quan hệ	                                    Bảng
+users	        1 - n	                                short_links
+short_links	    1 - n	                                click_statistics
+users	        1 - n	                                user_payments
+users	        n - n (thông qua role_permissions)	    permissions
+
+
+
+📌 1. Migration cho bảng users
+        return new class extends Migration {
+            public function up() {
+                Schema::create('users', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('name');
+                    $table->string('email')->unique();
+                    $table->string('password')->nullable(); // Có thể null nếu đăng nhập bằng Google
+                    $table->enum('provider', ['email', 'google'])->default('email');
+                    $table->string('provider_id')->nullable();
+                    $table->enum('role', ['user', 'premium', 'moderator', 'admin'])->default('user');
+                    $table->timestamps();
+                });
+            }
+
+            public function down() {
+                Schema::dropIfExists('users');
+            }
+        };
+
+
+📌 2. Migration cho bảng short_links
+
+        return new class extends Migration {
+            public function up() {
+                Schema::create('short_links', function (Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                    $table->string('short_code', 20)->unique();
+                    $table->text('original_url');
+                    $table->enum('status', ['active', 'expired', 'disabled'])->default('active');
+                    $table->timestamp('expires_at')->nullable();
+                    $table->timestamps();
+
+                    $table->index('short_code');
+                    $table->index('expires_at');
+                });
+            }
+
+            public function down() {
+                Schema::dropIfExists('short_links');
+            }
+        };
+
+
+📌 3. Migration cho bảng click_statistics
+
+        return new class extends Migration {
+            public function up() {
+                Schema::create('click_statistics', function (Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('short_link_id')->constrained('short_links')->onDelete('cascade');
+                    $table->string('ip_address', 45);
+                    $table->text('user_agent');
+                    $table->enum('referrer', ['facebook', 'google', 'ads', 'other'])->default('other');
+                    $table->enum('device_type', ['mobile', 'tablet', 'pc']);
+                    $table->string('os', 50);
+                    $table->string('country', 100)->nullable();
+                    $table->timestamp('clicked_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+                    $table->index('clicked_at');
+                    $table->index('referrer');
+                });
+            }
+
+            public function down() {
+                Schema::dropIfExists('click_statistics');
+            }
+        };
+
+
+📌 4. Migration cho bảng permissions
+
+        return new class extends Migration {
+            public function up() {
+                Schema::create('permissions', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('code', 50)->unique();
+                    $table->string('name');
+                    $table->text('description')->nullable();
+                    $table->timestamps();
+                });
+            }
+
+            public function down() {
+                Schema::dropIfExists('permissions');
+            }
+        };
+
+
+📌 5. Migration cho bảng role_permissions
+
+        return new class extends Migration {
+            public function up() {
+                Schema::create('role_permissions', function (Blueprint $table) {
+                    $table->id();
+                    $table->enum('role', ['user', 'premium', 'moderator', 'admin']);
+                    $table->foreignId('permission_id')->constrained('permissions')->onDelete('cascade');
+                    $table->timestamps();
+                });
+            }
+
+            public function down() {
+                Schema::dropIfExists('role_permissions');
+            }
+        };
+
+
+📌 6. Migration cho bảng user_payments
+
+        return new class extends Migration {
+            public function up() {
+                Schema::create('user_payments', function (Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                    $table->decimal('amount', 10, 2);
+                    $table->enum('payment_method', ['credit_card', 'paypal', 'bank_transfer']);
+                    $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+                    $table->timestamps();
+                });
+            }
+
+            public function down() {
+                Schema::dropIfExists('user_payments');
+            }
+        };
+
+
+
+III. các quan hệ (relationships) giữa các bảng
+
+📌 1. Model User.php
+
+        class User extends Authenticatable {
+            use HasFactory, Notifiable;
+
+            protected $fillable = [
+                'name', 'email', 'password', 'provider', 'provider_id', 'role',
+            ];
+
+            // Một user có nhiều link rút gọn
+            public function shortLinks(): HasMany {
+                return $this->hasMany(ShortLink::class);
+            }
+
+            // Một user có thể có nhiều lượt thanh toán
+            public function payments(): HasMany {
+                return $this->hasMany(UserPayment::class);
+            }
+
+            // Một user có thể có nhiều quyền (thông qua role)
+            public function permissions(): BelongsToMany {
+                return $this->belongsToMany(Permission::class, 'role_permissions', 'role', 'permission_id', 'role', 'id');
+            }
+        }
+
+
+📌 2. Model ShortLink.php
+
+        class ShortLink extends Model {
+            use HasFactory;
+
+            protected $fillable = [
+                'user_id', 'short_code', 'original_url', 'status', 'expires_at'
+            ];
+
+            // Một link thuộc về một user
+            public function user(): BelongsTo {
+                return $this->belongsTo(User::class);
+            }
+
+            // Một link có nhiều lượt click
+            public function clicks(): HasMany {
+                return $this->hasMany(ClickStatistic::class);
+            }
+        }
+
+
+
+📌 3. Model ClickStatistic.php
+
+        class ClickStatistic extends Model {
+            use HasFactory;
+
+            protected $fillable = [
+                'short_link_id', 'ip_address', 'user_agent', 'referrer', 'device_type', 'os', 'country', 'clicked_at'
+            ];
+
+            // Một lượt click thuộc về một link rút gọn
+            public function shortLink(): BelongsTo {
+                return $this->belongsTo(ShortLink::class);
+            }
+        }
+
+
+
+📌 4. Model Permission.php
+
+
+        class Permission extends Model {
+            use HasFactory;
+
+            protected $fillable = [
+                'code', 'name', 'description'
+            ];
+
+            // Một quyền có thể thuộc về nhiều vai trò
+            public function roles(): BelongsToMany {
+                return $this->belongsToMany(User::class, 'role_permissions', 'permission_id', 'role', 'id', 'role');
+            }
+        }
+
+
+📌 5. Model RolePermission.php
+
+        class RolePermission extends Model {
+            use HasFactory;
+
+            protected $fillable = [
+                'role', 'permission_id'
+            ];
+
+            // Một quyền thuộc về một nhóm quyền
+            public function permission(): BelongsTo {
+                return $this->belongsTo(Permission::class);
+            }
+        }
+
+
+📌 6. Model UserPayment.php
+
+        class UserPayment extends Model {
+            use HasFactory;
+
+            protected $fillable = [
+                'user_id', 'amount', 'payment_method', 'status'
+            ];
+
+            // Một thanh toán thuộc về một user
+            public function user(): BelongsTo {
+                return $this->belongsTo(User::class);
+            }
+        }
+
+
+
+IV.  Cài Flowbite để lấy UI từ Flowbite
+    npm install flowbite
+
+    - Thêm vào tailwind.config.js
+        + require('flowbite/plugin')    ---->     plugins: [forms, require('flowbite/plugin')],
+        + './node_modules/flowbite/**/*.js'   --->  content: [
+                                                        ...
+                                                        './node_modules/flowbite/**/*.js'
+                                                    ],
+
+    - chạy lại npm run dev
+
+V. Viết chức năng Admin
+    1. Dùng Middleware để kiểm tra quyền truy cập route admin
+        - Tạo Middleware: php artisan make:middleware AdminMiddleware
+            public function handle(Request $request, Closure $next , $guard = null): Response
+                {
+                    // nếu đã đăng nhập và là admin hoặc moderator
+                    if (Auth::check() && (Auth::user()->role == 'admin' || Auth::user()->role == 'moderator')) {
+                        return $next($request);
+                    }
+
+                    return redirect()->route('home')->with('error', 'Access Denied, you are not an administrator');
+
+                }
+        - khai báo middleware trong kennel
+            protected $middlewareAliases = [
+                ...
+                'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            ];
+
+
+        - Tạo Admin controller trong folder Admin
+            php artisan make:controller Admin/AdminController
+
+        - Viết Route chứa middleware để kiểm tra
+            Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+                Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+            });
+
+    2. Admin login/logout
+
+    - Tạo redirectAdmin middleware để chuyển hướng admin
+        php artisan make:middleware redirectAdmin
+
+
+    - Viết phương thức chuyển hướng nếu là admin hoặc moderator
+        public function handle(Request $request, Closure $next , $guard = null): Response
+            {
+                // nếu đã đăng nhập và là admin hoặc moderator
+                if (Auth::check() && (Auth::user()->role == 'admin' || Auth::user()->role == 'moderator')) {
+                    return $next($request);
+                }
+
+                return redirect()->route('home')->with('error', 'Access Denied, you are not an administrator');
+
+            }
+
+
+    - khai báo middleware trong kennel
+            use App\Http\Middleware\redirectAdmin;
+            protected $middlewareAliases = [
+                ...
+                'redirectAdmin' => redirectAdmin::class,
+            ];
+
+
+    - Tạo AdminAuthController
+        php artisan make:controller Admin/AdminAuthController
+
+        public function showLoginForm(){
+            // hiển thị giao diện login bằng vue (/resource/js/Pages/Admin/Auth)
+            return Inertia::render('Admin/Auth/Login');
+        }
+
+        public function login(Request $request){
+            //check if user is an admin and redirect
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' =>true])){
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('admin.login')->with('error', 'Thông tin đăng nhập không hợp lệ');
+        }
+
+        public function logout(Request $request){
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();  // hủy session hiện tại
+            return redirect()->route('admin.login');
+        }
+
+    - Tạo roure admin login/logout
+        Route::group(['prefix' => 'admin' , 'middleware' => 'redirectAdmin'],function () {
+            Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+            Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login.post');
+            Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+        });
+
+    - Tạo View form login Vue
+        + Tạo file vue (/resource/js/Pages/Admin/Auth/Login.vue)
+        + Copy nội dung từ file (/resource/js/Pages/Auth/Login.vue) bỏ qua file vừa tạo
+
+        + Thay đổi route để post form
+
+
+            const submit = () => {
+                // đổi route mới 'admin.login.post
+                form.post(route('admin.login.post'), {
+                    onFinish: () => form.reset('password'),
+                });
+            };
+
+
+    3. Tạo view dashboard admin
+        (/resource/js/Pages/Admin/Dashboard.vue)
+        <template>
+            <div>
+                <h1>Admin Dashboard</h1>
+            </div>
+        </template>
+
+        <script setup>
+
+        </script>
+
+        - gọi đến file dashboard trong AdminController
+            public function index(){
+                    return Inertia::render('Admin/Dashboard');
+                }
+
+
+    4. Tạo giao diện Dashboard Admin từ flowbite
+    - chọn 1 block giao diện trong https://flowbite.com/blocks/
+    - VD chọn https://flowbite.com/blocks/application/shells/
+    - copy code bỏ vào template của Dashboard.vue
+    - Thêm đoạn dưới để load hiệu ứng
+        <script setup>
+
+            import { onMounted } from 'vue'
+            import { initFlowbite } from 'flowbite'
+
+            // initialize components based on data attribute selectors
+            onMounted(() => {
+                initFlowbite();
+            })
+
+        </script>
+
+
+- Phân tách giao diện thành các thành phần nhỏ có thể sử dụng lại
+        + Tạo folder Pages/Admin/components
+        + Tạo file Navbar.vue, Sidebar.vue, Footer.vue
+        + Pages/Admin/components/AdminLayout.vue chứa các component của Navbar, Sidebar, Footer đã phần tách
+                    <template>
+                        <div class="antialiased bg-gray-50 dark:bg-gray-900">
+                            <!-- Navbar -->
+                            <Navbar />
+                            <!-- End Navbar -->
+
+                            <!-- Sidebar -->
+                            <Sidebar/>
+                            <!-- End Sidebar -->
+
+                            <main class="p-4 md:ml-64 h-auto pt-20">
+                                <slot />
+                            </main>
+                        </div>
+                    </template>
+
+                    <script setup>
+                        import { onMounted } from "vue";
+                        import { initFlowbite } from "flowbite";
+                        import Navbar from "./Navbar.vue";
+                        import Sidebar from "./Sidebar.vue";
+
+
+                        // initialize components based on data attribute selectors
+                        onMounted(() => {
+                            initFlowbite();
+                        });
+                    </script>
+
+
+        + Dashboard.vue chứa nội dung Main và gọi AdminLayout vào
+                    <template>
+                        <AdminLayout>
+                            <main>
+                                ...
+                            </main>
+                        </AdminLayout>
+                    </template>
+
+                    <script setup>
+                        // gọi AdminLayout
+                        import AdminLayout from "./AdminLayout.vue";
+                    </script>
+
+
+        *Note:
+            - Thẻ <slot></slot> được sử dụng trong component để xác định một vùng chèn nội dung (content insertion point). Đây là một phần quan trọng của slot-based content distribution và được sử dụng để chèn nội dung từ bên ngoài vào component con, cho phép các component trở nên linh hoạt và tái sử dụng.
+
+            - Cách hoạt động của <slot></slot>
+                + Component cha (Parent): Khi bạn sử dụng một component và muốn chèn nội dung cụ thể vào trong nó, bạn có thể đặt nội dung đó giữa thẻ mở và đóng của component.
+                + Component con (Child): Thẻ <slot></slot> trong component con sẽ là nơi hiển thị nội dung mà component cha truyền vào.
+
+
+
+- Thay đổi route button logout
+    - ở Navbar thanh đổi thẻ a của button logout thành Link (dùng route Link)
+            <li>
+                 // gọi đến name của route
+                <Link :href="route('logout')" method="post"
+                    class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" >Log Out
+                </Link>
+            </li>
+
+    - Khai báo Link ở script
+        <script setup>
+            import { Link } from "@inertiajs/vue3";
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
