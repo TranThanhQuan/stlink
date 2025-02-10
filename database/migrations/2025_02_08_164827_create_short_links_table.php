@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up() {
+        Schema::create('short_links', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('short_code', 20)->unique();
+            $table->text('original_url');
+            $table->enum('status', ['active', 'expired', 'disabled'])->default('active');
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamps();
+
+            $table->index('short_code');
+            $table->index('expires_at');
+        });
+    }
+
+    public function down() {
+        Schema::dropIfExists('short_links');
+    }
+};
+

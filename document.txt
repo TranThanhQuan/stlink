@@ -370,14 +370,154 @@ II. Thiết kế database
         CREATE INDEX idx_referrer ON click_statistics(referrer);
 
 
+** Tạo các model cần thiết **
+    - các model cần thiết:
+        User: Lưu thông tin người dùng
+        Role: Quản lý vai trò (Admin, User, Premium, v.v.)
+        Permission: Quyền truy cập từng chức năng
+        RolePermission: Gán quyền vào vai trò
+        UserRole: Gán vai trò cho người dùng
+        ShortLink: Quản lý link rút gọn
+        ClickStatistic: Lưu trữ lượt click
+        Plan: Gói đăng ký Premium
+        Subscription: Người dùng đăng ký gói Premium
 
 
 
 
+        php artisan make:model Role -m (-m để tạo thêm migration)
+
+    *Note: đặt tên model theo số ít thì migration sẽ tự động đặt số nhiều
+
+        Quan hệ giữa các bảng
+        Dưới đây là quan hệ giữa các bảng trong hệ thống:
+
+        User ↔ ShortLink (1-N)
+        → Một user có nhiều link rút gọn.
+
+        ShortLink ↔ ClickStatistic (1-N)
+        → Một link có nhiều lượt click.
+
+        User ↔ Role (N-N) (thông qua user_roles)
+        → Một user có thể có nhiều vai trò.
+
+        Role ↔ Permission (N-N) (thông qua role_permissions)
+        → Một vai trò có nhiều quyền.
+
+        User ↔ Subscription (1-N)
+        → Một user có nhiều lần đăng ký Premium.
+
+        Subscription ↔ Plan (N-1)
+        → Một gói Premium có nhiều subscriptions.
+
+** Tạo migration **
+
+** Tạo  Seeder **
+
+- Sử dụng laravel Sluggable để tạo slug thân thiện với SEO
+        composer require spatie/laravel-sluggable
+
+        + import vào trong model (product, blog, ...)
+
+            use Spatie\Sluggable\HasSlug;
+            use Spatie\Sluggable\SlugOptions;
+
+            class Product extends Model
+                {
+                    use HasSlug;
+                    use HasFactory;
+
+                    protected $fillable = [ 'title', 'slug', 'description', 'published', 'inStock', 'price', 'created_by', 'updated_by', 'deleted_by',];
+
+                    public function getSlugOptions() : SlugOptions
+                    {
+                        return SlugOptions::create()
+                            ->generateSlugsFrom('title')
+                            ->saveSlugsTo('slug');
+                    }
+                }
+
+III. Menu Sidebar
+
+Sidebar Menu Theo Role
+Mỗi role sẽ có các quyền truy cập khác nhau:
+
+🔹 Admin Sidebar
+    📊 Dashboard
+    👥 Quản lý người dùng
+        Danh sách người dùng
+        Phân quyền
+        Xóa/Ban người dùng
+
+    🔗 Quản lý link
+        Danh sách link
+        Kiểm duyệt link
+        Link bị báo cáo
+
+    📈 Thống kê & Báo cáo
+        Lượt click theo thời gian
+        Nguồn traffic
+        Thiết bị & Hệ điều hành
+
+    💳 Quản lý thanh toán
+        Danh sách giao dịch
+        Duyệt nâng cấp Premium
+
+    ⚙️ Cấu hình hệ thống
+        Cài đặt chung
+        Quản lý API key
+        Cấu hình email
 
 
 
-I. Tạo và config dự án
+🔸 Moderator Sidebar
+    📊 Dashboard
+    🔗 Quản lý link
+        Danh sách link
+        Kiểm duyệt link
+        Link bị báo cáo
+    📈 Thống kê lượt click
+    ⚠️ Báo cáo vi phạm
+        Danh sách link bị tố cáo
+
+
+🟢 Premium User Sidebar
+    🏠 Trang chủ
+
+    🔗 Quản lý link của tôi
+        Danh sách link
+        Chỉnh sửa link
+        Tùy chỉnh thời gian hết hạn
+        Xóa link
+
+    📊 Thống kê link
+        Lượt click theo thời gian
+        Nguồn traffic
+        Thiết bị & Hệ điều hành
+
+    💳 Gói Premium
+        Thông tin gói
+        Gia hạn / Nâng cấp
+
+    ⚙️ Cài đặt tài khoản
+
+
+🟡 User Sidebar
+    🏠 Trang chủ
+
+    🔗 Quản lý link của tôi
+        Danh sách link
+        Xóa link
+
+    📊 Thống kê cơ bản
+        Tổng số lượt click
+
+    ⚙️ Cài đặt tài khoản
+
+
+
+
+IV. Tạo và config dự án
 1. Tạo dự án
     composer create-project laravel/laravel ten_project "10.*"
 
@@ -734,12 +874,17 @@ V. Viết chức năng Admin
             return Inertia::render('Admin/Auth/Login');
         }
 
-        public function login(Request $request){
-            //check if user is an admin and redirect
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' =>true])){
-                return redirect()->route('admin.dashboard');
-            }
+        public function login(Request $request) {
+            $user = \App\Models\User::where('email', $request->email)
+                ->whereIn('role', ['admin', 'moderator'])
+                ->first();
 
+
+            if ($user && Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                return redirect()->route('admin.dashboard');
+
+            }
+            dd('Thông tin đăng nhập không hợp lệ');
             return redirect()->route('admin.login')->with('error', 'Thông tin đăng nhập không hợp lệ');
         }
 
@@ -807,7 +952,7 @@ V. Viết chức năng Admin
         </script>
 
 
-- Phân tách giao diện thành các thành phần nhỏ có thể sử dụng lại
+    - Phân tách giao diện thành các thành phần nhỏ có thể sử dụng lại
         + Tạo folder Pages/Admin/components
         + Tạo file Navbar.vue, Sidebar.vue, Footer.vue
         + Pages/Admin/components/AdminLayout.vue chứa các component của Navbar, Sidebar, Footer đã phần tách
@@ -865,23 +1010,44 @@ V. Viết chức năng Admin
 
 
 
-- Thay đổi route button logout
-    - ở Navbar thanh đổi thẻ a của button logout thành Link (dùng route Link)
-            <li>
-                 // gọi đến name của route
-                <Link :href="route('logout')" method="post"
-                    class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" >Log Out
-                </Link>
-            </li>
+    - Thay đổi route button logout
+        - ở Navbar thanh đổi thẻ a của button logout thành Link (dùng route Link)
+                <li>
+                    // gọi đến name của route
+                    <Link :href="route('logout')" method="post"
+                        class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" >Log Out
+                    </Link>
+                </li>
 
-    - Khai báo Link ở script
-        <script setup>
-            import { Link } from "@inertiajs/vue3";
-        </script>
-
-
+        - Khai báo Link ở script
+            <script setup>
+                import { Link } from "@inertiajs/vue3";
+            </script>
 
 
+
+        5.Tạo view cho dashboard
+                + Tạo file /Dashboard/Index.vue (/resources/js/pages/Admin/Dashboard)
+                + Tạo component Dashboard List cho admin Dashboard
+                        . Tạo file Admin/Dashboard/Dashboard.vue (cùng cấp với file Index phía trên)
+                        . chọn 1 block giao diện trong https://flowbite.com/blocks/
+                        . VD chọn https://flowbite.com/blocks/application/advanced-tables/
+                        . copy code bỏ vào template của file vừa tạo
+
+                + import AdminLayout và ProductList vào page product
+                        <script setup>
+                            import AdminLayout from '../Components/AdminLayout.vue'
+                            import ProductList from './ProductList.vue'
+                        <style lang="scss" scoped>
+
+                + Gọi Admin Layout vào page product
+                    <template>
+                        <AdminLayout>
+                            <ProductList>
+
+                            </ProductList>
+                        </AdminLayout>
+                    </template>
 
 
 

@@ -42,4 +42,23 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Một user có thể có nhiều vai trò
+    public function roles() {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
+    // Một user có thể có nhiều quyền thông qua vai trò
+    public function permissions() {
+        return $this->roles()->with('permissions');
+    }
+
+    // Một user có nhiều link rút gọn
+    public function shortLinks() {
+        return $this->hasMany(ShortLink::class);
+    }
+
+
+
+
 }
