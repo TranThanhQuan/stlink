@@ -54,7 +54,7 @@ class User extends Authenticatable
     }
 
     // Một user có nhiều link rút gọn
-    public function shortLinks() {
+    public function Links() {
         return $this->hasMany(ShortLink::class);
     }
 

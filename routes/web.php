@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
 
@@ -51,6 +52,18 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // link
+    Route::get('/links', [LinkController::class, 'index'])->name('admin.links.index');
+    Route::get('/links', [LinkController::class, 'index'])->name('admin.links.index');
+    Route::post('/links/store', [LinkController::class, 'store'])->name('admin.links.store');
+    Route::put('/links/update/{id}', [LinkController::class, 'update'])->name('admin.links.update');
+
+    Route::delete('/links/image/{id}', [LinkController::class, 'deleteImage'])->name('admin.links.image.delete');
+    Route::delete('/links/destroy/{id}', [LinkController::class, 'destroy'])->name('admin.links.destroy');
+
+
+
 });
 
 

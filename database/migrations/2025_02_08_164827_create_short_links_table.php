@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
-        Schema::create('short_links', function (Blueprint $table) {
+        Schema::create('links', function (Blueprint $table) {
             $table->id();
+            $table->string('title', 255);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('short_code', 20)->unique();
             $table->text('original_url');
@@ -21,7 +22,7 @@ return new class extends Migration {
     }
 
     public function down() {
-        Schema::dropIfExists('short_links');
+        Schema::dropIfExists('links');
     }
 };
 

@@ -299,9 +299,9 @@ II. Thiết kế database
 
 
 
-📌 2. Bảng short_links (Lưu link rút gọn)
+📌 2. Bảng links (Lưu link rút gọn)
 
-        CREATE TABLE short_links (
+        CREATE TABLE links (
             id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             user_id       BIGINT UNSIGNED NOT NULL,
             short_code    VARCHAR(20) UNIQUE NOT NULL, -- Mã rút gọn
@@ -325,7 +325,7 @@ II. Thiết kế database
             os           VARCHAR(50) NOT NULL, -- Hệ điều hành (iOS, Android, Windows,...)
             country       VARCHAR(100) NULL, -- Quốc gia truy cập
             clicked_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Thời gian truy cập
-            FOREIGN KEY (short_link_id) REFERENCES short_links(id) ON DELETE CASCADE
+            FOREIGN KEY (short_link_id) REFERENCES links(id) ON DELETE CASCADE
         );
 
 
@@ -364,8 +364,8 @@ II. Thiết kế database
 
 📌 7. Index để tối ưu truy vấn
 
-        CREATE INDEX idx_short_code ON short_links(short_code);
-        CREATE INDEX idx_expires_at ON short_links(expires_at);
+        CREATE INDEX idx_short_code ON links(short_code);
+        CREATE INDEX idx_expires_at ON links(expires_at);
         CREATE INDEX idx_clicked_at ON click_statistics(clicked_at);
         CREATE INDEX idx_referrer ON click_statistics(referrer);
 
@@ -546,8 +546,8 @@ IV. Tạo và config dự án
 II. Tạo migration
 
 Bảng	        Quan hệ	                                    Bảng
-users	        1 - n	                                short_links
-short_links	    1 - n	                                click_statistics
+users	        1 - n	                                links
+links	    1 - n	                                click_statistics
 users	        1 - n	                                user_payments
 users	        n - n (thông qua role_permissions)	    permissions
 
@@ -574,11 +574,11 @@ users	        n - n (thông qua role_permissions)	    permissions
         };
 
 
-📌 2. Migration cho bảng short_links
+📌 2. Migration cho bảng links
 
         return new class extends Migration {
             public function up() {
-                Schema::create('short_links', function (Blueprint $table) {
+                Schema::create('links', function (Blueprint $table) {
                     $table->id();
                     $table->foreignId('user_id')->constrained()->onDelete('cascade');
                     $table->string('short_code', 20)->unique();
@@ -593,7 +593,7 @@ users	        n - n (thông qua role_permissions)	    permissions
             }
 
             public function down() {
-                Schema::dropIfExists('short_links');
+                Schema::dropIfExists('links');
             }
         };
 
@@ -604,7 +604,7 @@ users	        n - n (thông qua role_permissions)	    permissions
             public function up() {
                 Schema::create('click_statistics', function (Blueprint $table) {
                     $table->id();
-                    $table->foreignId('short_link_id')->constrained('short_links')->onDelete('cascade');
+                    $table->foreignId('short_link_id')->constrained('links')->onDelete('cascade');
                     $table->string('ip_address', 45);
                     $table->text('user_agent');
                     $table->enum('referrer', ['facebook', 'google', 'ads', 'other'])->default('other');
@@ -1026,7 +1026,7 @@ V. Viết chức năng Admin
 
 
 
-        5.Tạo view cho dashboard
+    5.Tạo view cho dashboard
                 + Tạo file /Dashboard/Index.vue (/resources/js/pages/Admin/Dashboard)
                 + Tạo component Dashboard List cho admin Dashboard
                         . Tạo file Admin/Dashboard/Dashboard.vue (cùng cấp với file Index phía trên)
@@ -1050,21 +1050,149 @@ V. Viết chức năng Admin
                     </template>
 
 
+    6. Chức năng quản lý link
+        -Tạo /Admin/LinkController,
+            php artisan make:controller Admin/LinkController
+
+            public function index(){
+                // trỏ đến file view
+                return Inertia::render('Admin/Link/Index');
+            }
 
 
+        - Tạo route cho admin link
+            Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+                ...
+                // link
+                Route::get('/links', [LinkController::class, 'index'])->name('admin.links.index');
+
+            });
 
 
+        - Tạo view cho admin link
+            + Tạo file /Link/Index.vue (/resources/js/pages/Admin/Link)
+
+                <template>
+                    <AdminLayout>
+                        <LinkList :links="links">
+
+                        </LinkList>
+                    </AdminLayout>
+                </template>
+
+                <script setup>
+                    defineProps( {
+                        links: Array
+                    } );
+
+                    import AdminLayout from '../Components/AdminLayout.vue'
+                    import LinkList from './LinkList.vue'
+                </script>
 
 
+            + Tạo component Link List cho admin link
+                    . Tạo file Admin/Link/LinkList.vue (cùng cấp với file Index phía trên)
+                    . chọn 1 block giao diện trong https://flowbite.com/blocks/
+                    . VD chọn https://flowbite.com/blocks/application/advanced-tables/
+                    . copy code bỏ vào template của file vừa tạo
+
+            + import AdminLayout và LinkList vào page link
+                    <script setup>
+                        import AdminLayout from '../Components/AdminLayout.vue'
+                        import LinkList from './LinkList.vue'
+                    <style lang="scss" scoped>
+
+            + Gọi Admin Layout vào page link
+                <template>
+                    <AdminLayout>
+                        <LinkList>
+
+                        </LinkList>
+                    </AdminLayout>
+                </template>
+
+        - Đẩy dữ liệu từ DB ra view
+                + Lấy dữ liệu từ LinkController
+                    public function index(){
+                        //lấy tất cả các bản ghi từ bảng links
+                        //Kết quả trả về là một tập hợp (collection) chứa tất cả các đối tượng Link.
+                        $links = Link::get();
+                        // render component với tham số là 'links' với giá trị là kết quả lấy từ table
+                        return Inertia::render('Admin/Link/Index', ['links' => $links]);
+                    }
 
 
+                + ở view LinkList.vue lấy dữ liệu hiển thị ra màn hình bằng vòng lặp
+                    <script setup>
+                        import { usePage } from '@inertiajs/vue3';
+
+                        const links = usePage().props.links;
+                        console.log(links);
+                    </script>
 
 
+        -Tạo Modal add/edit link **
+            + Dùng thư viện element-plus
+                https://element-plus.org/en-US/component/upload.html
+
+            + cài element-plus.org
+                npm install element-plus --save
+
+            + import to global
+                . app.js
+                    import ElementPlus from 'element-plus'
+                    import 'element-plus/dist/index.css'
+
+                    ...
+                    setup({ el, App, props, plugin }) {
+
+                        app.use(VueSweetalert2)
+                        window.Swal = app.config.globalProperties.$swal
+                    },
 
 
+        - import sweatalert để hiển thị thông báo
+            npm i vue-sweetalert2
+
+            + app.js
+                import VueSweetalert2 from 'vue-sweetalert2';
+                import 'sweetalert2/dist/sweetalert2.min.css';
+
+                ...
 
 
+                setup({ el, App, props, plugin }) {
+                    const app = createApp({ render: () => h(App, props)})
 
+                    app.use(plugin)
+                    app.use(ZiggyVue)
+                    app.use(ElementPlus)
+                    app.mount(el)
+                },
+
+
+        - Tạo các thông báo tạm thời (flash messages) lưu trong session
+            Http/Middleware/HandleInertiaRequests.php
+                public function share(Request $request): array
+                {
+                    return [
+                        ...parent::share($request),
+                        'auth' => [
+                            'user' => $request->user(),
+                        ],
+                        // flash message
+                        'flash' => [
+                            'success' => fn () => $request->session()->get('success'),
+                            'error' => fn () => $request->session()->get('error'),
+                            'warning' => fn () => $request->session()->get('warning'),
+                            'info' => fn () => $request->session()->get('info'),
+                        ],
+                    ];
+                }
+
+        - import dayjs để định dạng ngày tháng ở frontend
+
+                npm install dayjs
 
 
 

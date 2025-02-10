@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up() {
         Schema::create('click_statistics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('short_link_id')->constrained('short_links')->onDelete('cascade');
+            $table->foreignId('short_link_id')->constrained('links')->onDelete('cascade');
             $table->string('ip_address', 45);
             $table->text('user_agent');
             $table->enum('referrer', ['facebook', 'google', 'ads', 'other'])->default('other');
