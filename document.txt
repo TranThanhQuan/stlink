@@ -1190,16 +1190,53 @@ V. Viết chức năng Admin
                     ];
                 }
 
-        - import dayjs để định dạng ngày tháng ở frontend
+        - Tạo link mới
+           + route
+                Route::post('/links/store', [LinkController::class, 'store'])->name('admin.links.store');
 
-                npm install dayjs
+            + controller
+                        public function store(Request $request) {
+                                // Validate dữ liệu đầu vào
+                                $validator = Validator::make($request->all(), [
+                                    'title' => 'required|string|max:255',
+                                    'short_code' => 'required|string|max:50|unique:links,short_code',
+                                    'original_link' => 'required',
+                                    'endDate' => 'nullable|date|after:today',
+                                ], [
+                                    'title.required' => 'Vui lòng nhập tiêu đề.',
+                                    'short_code.required' => 'Vui lòng nhập Halfback.',
+                                    'short_link.unique' => 'link rút gọn đã tồn tại!',
+                                    'original_link.required' => 'Vui lòng nhập link gốc.',
+                                    'original_link.url' => 'link không hợp lệ.',
+                                    'endDate.date' => 'Ngày hết hạn không hợp lệ.',
+                                    'endDate.after' => 'Ngày hết hạn phải lớn hơn hôm nay.',
+                                ]);
+
+                                // Nếu có lỗi, quay lại trang trước với lỗi và giữ lại dữ liệu nhập
+                                if ($validator->fails()) {
+                                    return redirect()->route('admin.links.index')
+                                        ->withErrors($validator); // Laravel tự động xử lý lỗi
+
+                                }
 
 
 
+                                // Lưu link vào database
+                                $link = new Link();
+                                $link->title = $request->title;
+                                $link->user_id = auth()->user()->id;
+                                $link->short_code = $request->short_code;
+                                $link->original_url = $request->original_link;
+                                $link->status = 'active';
+                                $link->expires_at = $request->endDate;
 
+                                $link->save();
 
+                                return redirect()->route('admin.links.index')->with('success', 'Thêm link thành công!');
+                            }
 
-
+            + view:
+                . các trường: Tiêu đề, link gốc, tùy chỉnh halfback, thời gian kết thúc
 
 
 

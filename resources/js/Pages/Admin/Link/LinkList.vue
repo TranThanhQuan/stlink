@@ -1,85 +1,64 @@
 <template>
     <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
         <!-- dialog for adding or editing link -->
-        <el-dialog v-model="dialogVisible" :title="editMode ? 'Edit link' : 'Add link'" width="50%" :before-close="handleClose" >
+        <el-dialog v-model="dialogVisible" :title="editMode ? 'Chỉnh Sửa Link' : 'Tạo Link Rút Gọn'" width="50%"
+            :before-close="handleClose">
             <!-- form  start -->
             <form class="mx-auto" @submit.prevent="editMode ? UpdateLink() : AddLink()">
-
                 <!-- title -->
                 <div class="relative z-0 w-full mb-5 group">
-                    <input type="text" v-model="title" name="floating_title" id="floating_title" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                    <label for="floating_title" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Title</label>
+                    <input type="text" v-model="title" name="floating_title" id="floating_title"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_title"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tiêu
+                        đề</label>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-
-                    <!-- price -->
-                    <div class="relative z-0 w-full mb-5 group">
-                        <input type="text" v-model="price" name="floating_price" id="floating_price" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                        <label for="floating_price" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price</label>
-                    </div>
-                    <!-- quantity -->
-                    <div class="relative z-0 w-full mb-5 group">
-                        <input v-model="quantity" type="number" name="quantity" id="floating_price" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                        <label for="floating_price" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- category selected -->
-                    <div class="relative z-0 w-full mb-5 group">
-                        <form class="mx-auto">
-                            <label for="catefories" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Category</label>
-                            <select v-model="category_id" id="catefories" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <!-- <option selected>Choose a Category</option> -->
-                                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
-                            </select>
-                        </form>
-                    </div>
-
-                    <!-- brand selected -->
-                    <div class="relative z-0 w-full mb-5 group">
-                        <form class="mx-auto">
-                            <label for="brands" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Brand</label>
-                            <select v-model="brand_id" id="brands" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <!-- <option selected>Choose a Brand</option> -->
-                                <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
-                            </select>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- description -->
+                <!-- original link -->
                 <div class="relative z-0 w-full mb-5 group">
-                    <form class="mx-auto">
-                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                        <textarea v-model="description" id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Leave a description..."></textarea>
-                    </form>
+                    <input type="text" v-model="original_link" name="floating_original_link" id="floating_original_link"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " />
+                    <label for="floating_original_link"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Link
+                        gốc</label>
                 </div>
 
-                <!-- multiple upload images -->
+                <!-- halfback -->
                 <div class="relative z-0 w-full mb-5 group">
-                    <el-upload v-model:file-list="linkImages" list-type="picture-card" multiple
-                        :auto-upload="false" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-change="handleFileChange">
-                        <el-icon>
-                            <Plus />
-                        </el-icon>
-                    </el-upload>
+                    <input type="text" v-model="custom_halfback" name="floating_custom_halfback"
+                        id="floating_custom_halfback"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " />
+                    <label for="floating_custom_halfback"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tùy
+                        chỉnh Half-back</label>
                 </div>
 
-                <!-- list of images for selected link -->
-                <div class="flex flex-nowrap mb-8">
-                    <div v-for="(pimage, index) in link_images" :key="pimage.id" class="relative w-32 h-32" >
-                        <img class="w-24 h-24 rounded " :src="`/${ pimage.image }`" alt="">
-                        <span class="absolute top-0 right-8 transform -translate-y-1/2 w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full">
-                            <span @click="deleteImage(pimage, index)" class="text-white text-xs font-bold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">x</span>
-                        </span>
+
+                <!-- date -->
+                <div class="relative z-0 w-full mb-5 group">
+                    <div>
+                        <!-- DateTime Picker -->
+                        <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
+                            Thời gian kết thúc
+                        </label>
+                        <input type="datetime-local" v-model="endDate"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            @input="logDateTime" required />
                     </div>
                 </div>
 
-                <!-- end of list images -->
 
-                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                <div class="relative z-0 w-full mb-5 group">
+                    <span>Link rút gọn: </span>
+                    <span
+                        class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">https://{{
+                        domain }}/{{ halfback }}</span>
+                </div>
+                <button type="submit"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Gửi</button>
             </form>
         </el-dialog>
 
@@ -87,78 +66,87 @@
 
         <div class="mx-auto px-4 lg:px-12">
             <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-                <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                <div
+                    class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                     <div class="w-full md:w-1/2">
                         <form class="flex items-center">
                             <label for="simple-search" class="sr-only">Tìm kiếm</label>
                             <div class="relative w-full">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                                        fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Tìm kiếm" required="">
+                                <input type="text" id="simple-search"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Tìm kiếm" required="">
                             </div>
                         </form>
                     </div>
-                    <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                        <button @click="openAddModal" type="button" class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                    <div
+                        class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+                        <button @click="openAddModal" type="button"
+                            class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
 
                             Tạo link
-                            <svg class="w-4 h-4 text-white-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
+                            <svg class="w-4 h-4 text-white-800 dark:text-white" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="M5 12h14m-7 7V5" />
                             </svg>
 
                         </button>
                         <div class="flex items-center space-x-3 w-full md:w-auto">
-                            <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown" class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-                                <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+
+
+                            <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
+                                class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+                                    class="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                        clip-rule="evenodd" />
                                 </svg>
-                                Actions
-                            </button>
-                            <div id="actionsDropdown" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="actionsDropdownButton">
-                                    <li>
-                                        <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mass Edit</a>
-                                    </li>
-                                </ul>
-                                <div class="py-1">
-                                    <a href="#" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete all</a>
-                                </div>
-                            </div>
-                            <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-                                </svg>
-                                Filter
-                                <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                Lọc
+                                <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path clip-rule="evenodd" fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                                 </svg>
                             </button>
-                            <div id="filterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-                                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Choose brand</h6>
+                            <div id="filterDropdown"
+                                class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+                                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Chọn trạng thái</h6>
                                 <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
                                     <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value="" class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Apple (56)</label>
+                                        <input id="apple" type="checkbox" value=""
+                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="apple"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hoạt động ({{ statusCounts.active }})
+                                            </label>
                                     </li>
+
                                     <li class="flex items-center">
-                                        <input id="fitbit" type="checkbox" value="" class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Microsoft (16)</label>
+                                        <input id="apple" type="checkbox" value=""
+                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="apple"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Không hoạt động ({{ statusCounts.disabled }})
+                                            </label>
                                     </li>
+
                                     <li class="flex items-center">
-                                        <input id="razor" type="checkbox" value="" class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="razor" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Razor (49)</label>
+                                        <input id="apple" type="checkbox" value=""
+                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                        <label for="apple"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hết hạn ({{ statusCounts.expired }})
+                                            </label>
                                     </li>
-                                    <li class="flex items-center">
-                                        <input id="nikon" type="checkbox" value="" class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="nikon" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Nikon (12)</label>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <input id="benq" type="checkbox" value="" class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="benq" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">BenQ (74)</label>
-                                    </li>
+
                                 </ul>
                             </div>
                         </div>
@@ -182,13 +170,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="link in links" :key="link.id" class="border-b dark:border-gray-700">
+                            <tr v-for="link in links.data" :key="link.id" class="border-b dark:border-gray-700">
                                 <td class="px-4 py-3">#{{ link.id }}</td>
-                                <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ link.title }}</th>
+                                <th scope="row"
+                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{
+                                    truncate(link.title)}}</th>
 
                                 <td class="px-4 py-3 text-blue-900 font-bold">
                                     <a :href="link.original_url" target="_blank" rel="noopener noreferrer">
-                                        {{ link.original_url }}
+                                        {{ truncate(link.original_url) }}
                                     </a>
                                 </td>
 
@@ -198,67 +188,65 @@
                                     </a>
                                 </td>
 
-                                <!-- <td class="px-4 py-3">https://{{ domain }}/{{ link.short_code }}</td> -->
                                 <td class="px-4 py-3">{{ link.user.name }}</td>
 
                                 <td class="px-4 py-3">
-                                    <button v-if="link.status == 'active'" type="button" class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Hoạt động</button>
+                                    <button v-if="link.status == 'active'" type="button"
+                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Hoạt
+                                        động</button>
 
 
-                                    <button v-else-if="link.status == 'expired'" type="button" class="px-3 py-2 text-xs font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">Hết hạn</button>
+                                    <button v-else-if="link.status == 'expired'" type="button"
+                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">Hết
+                                        hạn</button>
 
 
-                                    <button v-else type="button" class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Không Hoạt Động</button>
+                                    <button v-else type="button"
+                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Không
+                                        Hoạt Động</button>
 
                                 </td>
 
-                                <td class="px-4 py-3">{{ link.created_at  }}</td>
+                                <td class="px-4 py-3">{{ link.created_at }}</td>
 
 
-                                <!-- <td class="px-4 py-3 min-w-36">
-                                    <span v-if="link.inStock == 0" class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">in Stock</span>
-                                    <span v-else class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">out of Stock</span>
-                                </td> -->
 
 
                                 <td class="px-4 py-3 flex items-center justify-end">
-                                    <!-- <a href="#" @click="openEditModal(link)" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a> -->
-
-
                                     <!-- Nút Dropdown -->
-                                     <button
-                                        :id="`${link.id}-dropdown-button`"
+                                    <button :id="`${link.id}-dropdown-button`"
                                         :data-dropdown-toggle="`${link.id}-dropdown`"
                                         class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                                        type="button"
-                                    >
-                                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        type="button">
+                                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                         </svg>
                                     </button>
 
                                     <!-- Dropdown Menu -->
-                                     <div
-                                        :id="`${link.id}-dropdown`"
-                                        class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
-                                    >
-                                        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" :aria-labelledby="`${link.id}-dropdown-button`">
-                                        <li>
-                                            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi tiết</a>
-                                        </li>
-                                        <li>
-                                            <button
-                                            @click="openEditModal(link)"
-                                            class="block w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left"
-                                            >
-                                            Chỉnh sửa
-                                            </button>
-                                        </li>
+                                    <div :id="`${link.id}-dropdown`"
+                                        class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                                        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                            :aria-labelledby="`${link.id}-dropdown-button`">
+                                            <li>
+                                                <a :href="route('admin.links.view', { id: link.id })"
+                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi
+                                                    tiết</a>
+                                            </li>
+                                            <li>
+                                                <button @click="openEditModal(link)"
+                                                    class="block w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left">
+                                                    Chỉnh sửa
+                                                </button>
+                                            </li>
                                         </ul>
                                         <div class="py-1">
-                                        <a href="#" @click="deleteLink(link, index)" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-                                            Xóa
-                                        </a>
+                                            <a href="#" @click="deleteLink(link, index)"
+                                                class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                                                Xóa
+                                            </a>
                                         </div>
                                     </div>
                                 </td>
@@ -266,280 +254,312 @@
                             </tr>
 
                         </tbody>
+
+
+
+
+
                     </table>
                 </div>
-                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+
+                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+                    aria-label="Table navigation">
                     <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                         Showing
-                        <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ links.from }}-{{ links.to }}</span>
                         of
-                        <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">{{ links.total }}</span>
                     </span>
                     <ul class="inline-flex items-stretch -space-x-px">
+                        <!-- Nút Previous -->
                         <li>
-                            <a href="#" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            <a :href="links.prev_page_url ? route('admin.links.index', { page: links.current_page - 1 }) : '#'"
+                                :class="['flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300',
+                                    links.prev_page_url ? 'hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white' : 'cursor-not-allowed opacity-50']">
                                 <span class="sr-only">Previous</span>
-                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </a>
                         </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
+
+                        <!-- Số Trang -->
+                        <li v-for="page in links.last_page" :key="page">
+                            <a :href="route('admin.links.index', { page })" :class="['flex items-center justify-center text-sm py-2 px-3 leading-tight border',
+                                page === links.current_page
+                                    ? 'z-10 text-primary-600 bg-primary-50 border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white'
+                                    : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+                            ]">
+                                {{ page }}
+                            </a>
                         </li>
+
+                        <!-- Nút Next -->
                         <li>
-                            <a href="#" class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-                        </li>
-                        <li>
-                            <a href="#" aria-current="page" class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">3</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">100</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            <a :href="links.next_page_url ? route('admin.links.index', { page: links.current_page + 1 }) : '#'"
+                                :class="['flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300',
+                                    links.next_page_url ? 'hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white' : 'cursor-not-allowed opacity-50']">
                                 <span class="sr-only">Next</span>
-                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </a>
                         </li>
                     </ul>
+
                 </nav>
+
+
+
             </div>
         </div>
     </section>
 </template>
 
+
 <script setup>
-    import { router, usePage } from '@inertiajs/vue3';
-    import {ref, computed } from 'vue';
-    import dayjs from "dayjs";
-    import { Plus } from '@element-plus/icons-vue'
-
-    defineProps({
-        links: Array
-    });
+import { router, usePage } from '@inertiajs/vue3';
+import { ref, watch, computed, onMounted } from 'vue';
 
 
-    const domain = ref(window.location.hostname);
-
-    // const links = usePage().props.links; // lấy dữ liệu từ modal
-    const brands = usePage().props.brands;
-    const categories = usePage().props.categories;
-
-    const isAddLink = ref(false);
-    const editMode = ref(false);
-    const dialogVisible = ref(false);
+defineProps({
+    links: Array,
+    statusCounts: Array
+});
 
 
-    //upload mulitpel images
-    const linkImages = ref([])
-    const dialogImageUrl = ref('')
-    const handleFileChange = (file) => {
-        linkImages.value.push(file)
+
+
+
+const domain = ref(window.location.hostname);
+
+//
+const truncate = (text) => {
+    return text.length > 20 ? text.slice(0, 20) + '...' : text;
+};
+
+const isAddLink = ref(false);
+const editMode = ref(false);
+const dialogVisible = ref(false);
+const handleClose = () => {
+    dialogVisible.value = false;
+};
+
+
+
+//link form data
+const title = ref('');
+const original_link = ref('');
+const endDate = ref('');
+const custom_halfback = ref("");
+const random_halfback = ref("");
+
+//end link form data
+
+
+//tạo random halfback
+const halfback = computed(() => {
+    return custom_halfback.value ? custom_halfback.value : random_halfback.value;
+});
+
+watch(original_link, (newVal) => {
+    if (newVal.trim() !== "") {
+        random_halfback.value = generateRandomString(6);
     }
+});
 
-    const handlePictureCardPreview = (file) => {
-        dialogImageUrl.value = file.url // hình ảnh link modal chỉnh sửa
-        dialogVisible.value = true
+function generateRandomString(length) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length)).toLowerCase();
     }
-
-    const handleRemove = (file) => {
-        console.log(file)
-    }
-
-    //link form data
-    const id = ref('');
-    const title = ref('');
-    const price = ref('');
-    const quantity = ref('');
-    const description = ref('');
-    const link_images = ref([]);
-
-    const published = ref('');
-    const category_id = ref('');
-    const brand_id = ref('');
-    const inStock = ref('');
-    //end link form data
+    return result;
+}
 
 
-    //open add modal
-    const openAddModal = () => {
-        isAddLink.value = true;
-        dialogVisible.value = true;
-        editMode.value = false;
-    }
+//open add modal
+const openAddModal = () => {
+    isAddLink.value = true;
+    dialogVisible.value = true;
+    editMode.value = false;
+}
 
 
-    //open edit modal
-    const openEditModal = (link) => {
-        // console.log(link);
-        editMode.value = true;
-        isAddLink.value = false;
-        dialogVisible.value = true;
+//open edit modal
+const openEditModal = (link) => {
+    editMode.value = true;
+    isAddLink.value = false;
+    dialogVisible.value = true;
 
-        //fill data link
-        id.value = link.id;
-        title.value = link.title;
-        price.value = link.price;
-        quantity.value = link.quantity;
-        description.value = link.description;
-        link_images.value = link.link_images;
-        brand_id.value = link.brand_id;
-        category_id.value = link.category_id;
-        link_images.value = link.link_images;
-    }
+    //fill data link
+    id.value = link.id;
+    title.value = link.title;
+    original_link.value = link.original_url;
+    custom_halfback.value = link.short_code;
+    endDate.value = link.expires_at;
+}
 
 
-    // add link method
-    const AddLink = async () => {
-        const formData = new FormData(); // tạo form
+// add link method
+const AddLink = async () => {
+    const formData = new FormData(); // tạo form
 
-        formData.append('title', title.value);
-        formData.append('price', price.value);
-        formData.append('quantity', quantity.value);
-        formData.append('description', description.value);
-        formData.append('category_id', category_id.value);
-        formData.append('brand_id', brand_id.value);
+    formData.append('title', title.value);
+    formData.append('original_link', original_link.value);
+    formData.append('short_code', halfback.value);
+    formData.append('endDate', endDate.value);
 
-        //append link images to the form data
-        for (const image of linkImages.value) {
-            formData.append('link_images[]', image.raw);
-        }
 
-        try {
-            await router.post('links/store', formData, {
-                onSuccess: page => {
+    try {
+        await router.post('links/store', formData, {
+            onSuccess: (page) => {
+                if (page.props.flash.success) {
                     Swal.fire({
                         toast: true,
                         icon: 'success',
                         position: 'top',
                         showConfirmButton: false,
                         title: page.props.flash.success,
-                    })
+                    });
+
                     dialogVisible.value = false;
                     resetFormData();
                 }
-            });
-        }catch (e) {
-            console.log(e);
-        }
-
-    }
-
-
-    // reset data after add
-    const resetFormData = () => {
-        id.value = '';
-        title.value = '';
-        price.value = '';
-        quantity.value = '';
-        description.value = '';
-        linkImages.value = [];
-        dialogImageUrl.value = ''; // hình ảnh link của modal chỉnh sửa
-    }
-
-
-    // delete sign link image
-
-    const deleteImage = async (pimage, index) => {
-        try {
-            await router.delete('/admin/links/image/' + pimage.id, {
-                onSuccess: page => {
-                    link_images.value.splice(index, 1); // xóa hình ảnh khỏi mảng
+            },
+            onError: (errors) => {
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat().join('<br>');
 
                     Swal.fire({
                         toast: true,
-                        icon:'success',
+                        icon: 'error',
                         position: 'top',
                         showConfirmButton: false,
-                        title: page.props.flash.success,
-                    })
+                        title: 'Đã xảy ra lỗi!',
+                        html: errorMessages,
+                    });
+                    dialogVisible.value = false;
+
                 }
-            });
-        } catch (e) {
-            console.log(e);
-        }
+            },
+        });
+    } catch (e) {
+        console.log(e);
     }
+
+}
+
+
+// reset data after add
+const resetFormData = () => {
+    title.value = '';
+    original_link.value = '';
+    custom_halfback.value = '';
+    endDate.value = [];
+}
+
+
+
+const id = ref('');
 
 // update link method
-    const UpdateLink = async () => {
-        const formData = new FormData(); // tạo form
+const UpdateLink = async () => {
+    const formData = new FormData(); // tạo form
 
-        formData.append('title', title.value);
-        formData.append('price', price.value);
-        formData.append('quantity', quantity.value);
-        formData.append('description', description.value);
-        formData.append('category_id', category_id.value);
-        formData.append('brand_id', brand_id.value);
-        formData.append("_method", 'PUT');
-
-        //append link images to the form data
-        for (const image of linkImages.value) {
-            formData.append('link_images[]', image.raw);
-        }
+    formData.append('title', title.value);
+    formData.append('original_link', original_link.value);
+    formData.append('short_code', halfback.value);
+    formData.append('endDate', endDate.value);
+    formData.append("_method", 'PUT');
+    //
 
 
-        try{
-            await router.post('links/update/' + id.value, formData, {
-                onSuccess: page => {
-                    dialogVisible.value = false; // đóng modal khi thành công
-                    resetFormData();        //reset form data
+    try {
+        await router.post('links/update/' + id.value, formData, {
+            onSuccess: (page) => {
+                if (page.props.flash.success) {
                     Swal.fire({
                         toast: true,
-                        icon:'success',
+                        icon: 'success',
                         position: 'top',
                         showConfirmButton: false,
                         title: page.props.flash.success,
-                    })
-                }
-            });
-        }catch(e){
-            console.log(e);
-        }
-    }
-
-
-    //delete link
-    const deleteLink = (link, index) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This action cannot be undone!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                try {
-                    router.delete('links/destroy/' + link.id, link, {
-                        onSuccess: (page) => {
-                            this.delete(link, index);
-                            Swal.fire({
-                                toast: true,
-                                icon: 'success',
-                                position: 'top',
-                                showConfirmButton: false,
-                                title: page.props.flash.success,
-                            });
-                        }
                     });
-                } catch (e) {
-                    console.log(e);
+
+                    dialogVisible.value = false;
+                    resetFormData();
                 }
-            }
+            },
+            onError: (errors) => {
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat().join('<br>');
+
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        position: 'top',
+                        showConfirmButton: false,
+                        title: 'Đã xảy ra lỗi!',
+                        html: errorMessages,
+                    });
+                    dialogVisible.value = false;
+                    resetFormData();
+
+                }
+            },
         });
-    };
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+
+//delete link
+const deleteLink = (link, index) => {
+    Swal.fire({
+        title: 'Bạn có muốn xóa link?',
+        text: "Không thể hoàn tác hành động này!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Có, Hãy xóa!',
+        cancelButtonText: 'Hủy!'
+
+    }).then((result) => {
+        if (result.isConfirmed) {
+            try {
+                router.delete('links/destroy/' + link.id, link, {
+                    onSuccess: (page) => {
+                        Swal.fire({
+                            toast: true,
+                            icon: 'success',
+                            position: 'top',
+                            showConfirmButton: false,
+                            title: page.props.flash.success,
+                        });
+                        this.delete(product, index);
+                    }
+
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    });
+};
 
 
 
 </script>
 
 <style lang="scss" scoped>
-
+@import "https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css";
 </style>

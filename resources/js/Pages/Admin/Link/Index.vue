@@ -1,6 +1,6 @@
 <template>
     <AdminLayout>
-        <LinkList :links="links">
+        <LinkList :links="links" :statusCounts="statusCounts" >
 
         </LinkList>
     </AdminLayout>
@@ -8,7 +8,9 @@
 
 <script setup>
     defineProps( {
-        links: Array
+        links: Array,
+        statusCounts: Array,
+
     } );
 
     import AdminLayout from '../Components/AdminLayout.vue'

@@ -188,7 +188,7 @@ import ApexCharts from "apexcharts";
 import { initFlowbite } from "flowbite";
 import AdminLayout from "./Components/AdminLayout.vue";
 
-const chartRef = ref(null);
+
 
 onMounted(() => {
     initFlowbite();
@@ -206,18 +206,32 @@ onMounted(() => {
             toolbar: {
                 show: true,
             },
+
         },
         tooltip: {
             enabled: false,
-            x: {
-                show: false,
+            theme: "dark",
+            style: {
+                fontSize: "12px",
+                fontFamily: "Inter, sans-serif",
+                color: "#ffffff"
             },
+            y: {
+                formatter: function (value) {
+                    console.log("Tooltip Value:", value);
+                    return value.toLocaleString() + " users";
+                }
+            }
         },
+
+
+
+
         fill: {
             type: "gradient",
             gradient: {
-                opacityFrom: 0.55,
-                opacityTo: 0,
+                opacityFrom: 0.8, // Tăng độ trong suốt
+                opacityTo: 0.5,   // Không quá mờ
                 shade: "#1C64F2",
                 gradientToColors: ["#1C64F2"],
             },
@@ -226,8 +240,9 @@ onMounted(() => {
             enabled: true,
         },
         stroke: {
-            width: 6,
+            width: 3, // Giảm độ dày của đường
         },
+
         grid: {
             show: false,
             strokeDashArray: 4,
@@ -240,12 +255,12 @@ onMounted(() => {
         series: [
             {
                 name: "New users",
-                data: [6500, 6418, 6456, 6526, 6356, 6456],
+                data: [6510, 6418, 6456, 6526, 6356, 6456],
                 color: "#1A56DB",
             },
         ],
         xaxis: {
-            categories: ['01 February', '02 February', '03 February', '04 February', '05 February', '06 February', '07 February'],
+            categories: ['01 February', '02 February', '03 February', '04 February', '05 February', '06 February'],
             labels: {
                 show: true,
             },
@@ -262,9 +277,11 @@ onMounted(() => {
     }
 
     if (document.getElementById("area-chart") && typeof ApexCharts !== 'undefined') {
-        const chart = new ApexCharts(document.getElementById("area-chart"), options);
-        chart.render();
-    }
+
+    const chart = new ApexCharts(document.getElementById("area-chart"), options);
+    chart.render();
+}
+
 
 });
 

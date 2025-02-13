@@ -1,11 +1,9 @@
 import './bootstrap';
 import '../css/app.css';
-
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
-
 // element plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -13,6 +11,11 @@ import 'element-plus/dist/index.css'
 // sweatalert
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+
+import VueTailwindDatepicker from 'vue-tailwind-datepicker';
+
+
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -25,6 +28,8 @@ createInertiaApp({
         app.use(ZiggyVue)
         app.use(ElementPlus)
         app.use(VueSweetalert2)
+        app.use(VueTailwindDatepicker)
+
         window.Swal = app.config.globalProperties.$swal
         app.mount(el)
     },

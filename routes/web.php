@@ -55,12 +55,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     // link
     Route::get('/links', [LinkController::class, 'index'])->name('admin.links.index');
-    Route::get('/links', [LinkController::class, 'index'])->name('admin.links.index');
     Route::post('/links/store', [LinkController::class, 'store'])->name('admin.links.store');
     Route::put('/links/update/{id}', [LinkController::class, 'update'])->name('admin.links.update');
-
-    Route::delete('/links/image/{id}', [LinkController::class, 'deleteImage'])->name('admin.links.image.delete');
     Route::delete('/links/destroy/{id}', [LinkController::class, 'destroy'])->name('admin.links.destroy');
+
+    Route::get('/links/view/{id}', [LinkController::class, 'view'])->name('admin.links.view');
 
 
 
