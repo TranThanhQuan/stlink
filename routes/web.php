@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LinkController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
 
@@ -58,9 +59,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/links/store', [LinkController::class, 'store'])->name('admin.links.store');
     Route::put('/links/update/{id}', [LinkController::class, 'update'])->name('admin.links.update');
     Route::delete('/links/destroy/{id}', [LinkController::class, 'destroy'])->name('admin.links.destroy');
-
     Route::get('/links/view/{id}', [LinkController::class, 'view'])->name('admin.links.view');
 
+    // link
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/store', [UserController::class, 'store'])->name('admin.users.store');
+    Route::put('/users/update/{id}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/destroy/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/users/view/{id}', [UserController::class, 'view'])->name('admin.users.view');
 
 
 });

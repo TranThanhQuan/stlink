@@ -1238,11 +1238,66 @@ V. Viết chức năng Admin
             + view:
                 . các trường: Tiêu đề, link gốc, tùy chỉnh halfback, thời gian kết thúc
 
+    7 . Chức năng quản lý người dùng
+
+        -Tạo /Admin/UserController,
+            php artisan make:controller Admin/UserController
+
+            public function index(){
+                // trỏ đến file view
+                return Inertia::render('Admin/User/Index');
+            }
 
 
+        - Tạo route cho admin user
+            Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+                ...
+                // user
+                Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+
+            });
 
 
+        - Tạo view cho admin user
+            + Tạo file /User/Index.vue (/resources/js/pages/Admin/User)
 
+                <template>
+                    <AdminLayout>
+                        <UserList :user="user">
+
+                        </UserList>
+                    </AdminLayout>
+                </template>
+
+                <script setup>
+                    defineProps( {
+                        user: Array
+                    } );
+
+                    import AdminLayout from '../Components/AdminLayout.vue'
+                    import UserList from './UserList.vue'
+                </script>
+
+            + Tạo component User List cho admin user
+                    . Tạo file Admin/User/UserList.vue (cùng cấp với file Index phía trên)
+                    . chọn 1 block giao diện trong https://flowbite.com/blocks/
+                    . VD chọn https://flowbite.com/blocks/application/advanced-tables/
+                    . copy code bỏ vào template của file vừa tạo
+
+            + import AdminLayout và UserList vào page user
+                    <script setup>
+                        import AdminLayout from '../Components/AdminLayout.vue'
+                        import UserList from './UserList.vue'
+                    <style lang="scss" scoped>
+
+            + Gọi Admin Layout vào page user
+                <template>
+                    <AdminLayout>
+                        <User>
+
+                        </User>
+                    </AdminLayout>
+                </template>
 
 
 

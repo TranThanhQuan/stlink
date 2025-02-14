@@ -19,6 +19,8 @@ return new class extends Migration
             $table->enum('provider', ['email', 'google'])->edefault('email');
             $table->string('provider_id')->nullable();
             $table->enum('role', ['user', 'premium', 'moderator', 'admin'])->default('user');
+            $table->enum('status', ['active', 'disable'])->default('active');
+
             $table->timestamps();
         });
     }

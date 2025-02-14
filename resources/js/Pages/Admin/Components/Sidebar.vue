@@ -54,15 +54,14 @@
                     </button>
                     <ul id="dropdown-users" class="hidden py-2 space-y-2">
                         <li>
-                            <Link href=""
+                            <Link :href="route('admin.users.index')"
                                 class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Danh sách </Link>
                         </li>
 
                         <li>
                             <a href="#"
-                                class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Phân
-                                quyền</a>
+                                class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Nhóm</a>
                         </li>
 
                     </ul>
