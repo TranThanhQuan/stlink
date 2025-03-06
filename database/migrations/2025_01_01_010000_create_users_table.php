@@ -16,14 +16,20 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password')->nullable(); // Có thể null nếu đăng nhập bằng Google
-            $table->enum('provider', ['email', 'google'])->edefault('email');
+            $table->enum('provider', ['email', 'google'])->default('email')->nullable();
             $table->string('provider_id')->nullable();
-            $table->enum('role', ['user', 'premium', 'moderator', 'admin'])->default('user');
-            $table->enum('status', ['active', 'disable'])->default('active');
-
+            $table->unsignedBigInteger('group_id');
+            $table->boolean('isAdmin')->default(0);
+            $table->enum('status', ['active', 'disabled'])->default('active');
             $table->timestamps();
+
+            // Thêm khóa ngoại
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
+
     }
+
+
 
     /**
      * Reverse the migrations.

@@ -21,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'isAdmin',
+        'group_id'
 
     ];
 
@@ -46,21 +47,24 @@ class User extends Authenticatable
     ];
 
     // Một user có thể có nhiều vai trò
-    public function roles() {
-        return $this->belongsToMany(Role::class, 'user_roles');
-    }
+    // public function role()
+    // {
+    //     return $this->belongsTo(Role::class);
+    // }
 
     // Một user có thể có nhiều quyền thông qua vai trò
-    public function permissions() {
-        return $this->roles()->with('permissions');
-    }
+    // public function permissions() {
+    //     return $this->roles()->with('permissions');
+    // }
 
     // Một user có nhiều link rút gọn
     public function Links() {
         return $this->hasMany(ShortLink::class);
     }
 
-
+    public function group(){
+        return $this->belongsTo(Groups::class);
+    }
 
 
 }

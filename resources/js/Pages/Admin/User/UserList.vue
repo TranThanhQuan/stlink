@@ -1,67 +1,5 @@
 <template>
     <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
-        <!-- dialog for adding or editing user -->
-        <el-dialog v-model="dialogVisible" :title="editMode ? 'Chỉnh Sửa User' : 'Tạo User Rút Gọn'" width="50%"
-            :before-close="handleClose">
-            <!-- form  start -->
-            <form class="mx-auto" @submit.prevent="editMode ? UpdateUser() : AddUser()">
-                <!-- title -->
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="text" v-model="title" name="floating_title" id="floating_title"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required />
-                    <label for="floating_title"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tiêu
-                        đề</label>
-                </div>
-
-                <!-- original user -->
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="text" v-model="original_user" name="floating_original_user" id="floating_original_user"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " />
-                    <label for="floating_original_user"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">User
-                        gốc</label>
-                </div>
-
-                <!-- halfback -->
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="text" v-model="custom_halfback" name="floating_custom_halfback"
-                        id="floating_custom_halfback"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " />
-                    <label for="floating_custom_halfback"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tùy
-                        chỉnh Half-back</label>
-                </div>
-
-
-                <!-- date -->
-                <div class="relative z-0 w-full mb-5 group">
-                    <div>
-                        <!-- DateTime Picker -->
-                        <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
-                            Thời gian kết thúc
-                        </label>
-                        <input type="datetime-local" v-model="endDate"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            @input="logDateTime" required />
-                    </div>
-                </div>
-
-
-                <div class="relative z-0 w-full mb-5 group">
-                    <span>User rút gọn: </span>
-                    <span
-                        class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">https://{{
-                        domain }}/{{ halfback }}</span>
-                </div>
-                <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Gửi</button>
-            </form>
-        </el-dialog>
-
         <!-- end dialog for adding or editing user -->
 
         <div class="mx-auto px-4 lg:px-12">
@@ -90,15 +28,7 @@
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                         <button @click="openAddModal" type="button"
                             class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-
                             Thêm user
-                            <svg class="w-4 h-4 text-white-800 dark:text-white" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="M5 12h14m-7 7V5" />
-                            </svg>
-
                         </button>
                         <div class="flex items-center space-x-3 w-full md:w-auto">
 

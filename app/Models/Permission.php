@@ -11,7 +11,7 @@ class Permission extends Model {
     protected $fillable = ['name', 'code'];
 
     // Một quyền có thể thuộc nhiều vai trò
-    public function roles() {
-        return $this->belongsToMany(Role::class, 'role_permissions');
-    }
+    // public function roles() {
+    //     return $this->belongsToMany(Role::class, 'role_permissions');
+    // }
 }

@@ -1,21 +1,23 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
-        Schema::create('permissions', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 50)->unique();
-            $table->string('name');
-            $table->text('description')->nullable();
+            $table->string('name', 100);
+            $table->json('permissions');
+            $table->unsignedBigInteger('user_id')->default(1);
+
             $table->timestamps();
         });
+
     }
 
     public function down() {
-        Schema::dropIfExists('permissions');
+        Schema::dropIfExists('groups');
     }
 };
+

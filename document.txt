@@ -373,11 +373,9 @@ II. Thiết kế database
 ** Tạo các model cần thiết **
     - các model cần thiết:
         User: Lưu thông tin người dùng
-        Role: Quản lý vai trò (Admin, User, Premium, v.v.)
-        Permission: Quyền truy cập từng chức năng
-        RolePermission: Gán quyền vào vai trò
-        UserRole: Gán vai trò cho người dùng
-        ShortLink: Quản lý link rút gọn
+        Group: Quản lý vai trò (Admin, User, Premium, v.v.)
+
+
         ClickStatistic: Lưu trữ lượt click
         Plan: Gói đăng ký Premium
         Subscription: Người dùng đăng ký gói Premium
@@ -414,28 +412,59 @@ II. Thiết kế database
 
 ** Tạo  Seeder **
 
-- Sử dụng laravel Sluggable để tạo slug thân thiện với SEO
-        composer require spatie/laravel-sluggable
+        DB::statement('SET FOREIGN_KEY_CHECKS=0'); // tạm bỏ qua khóa ngoại
 
-        + import vào trong model (product, blog, ...)
+        $groupId = DB::table('groups')->insertGetId([
+            'name' => 'Admin',
+            'user_id' => 0,
+            'permissions' => json_encode([
+                "users" => ["view", "add", "edit", "delete"],
+                "groups" => ["view", "add", "edit", "delete", "permission"]
+            ]),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-            use Spatie\Sluggable\HasSlug;
-            use Spatie\Sluggable\SlugOptions;
+        DB::statement('SET FOREIGN_KEY_CHECKS=1'); //tiếp tục kiểm tra khóa ngoại
 
-            class Product extends Model
-                {
-                    use HasSlug;
-                    use HasFactory;
+        if ($groupId > 0) {
+            $userId = DB::table('users')->insertGetId([
+                'name' => 'Admin',
+                'email' => 'admin@gmail.com',
+                'password' => Hash::make('123456789'),
+                'isAdmin' => 1,
+                'group_id' => $groupId, // Dùng biến thay vì hardcode
+                'provider' => 'email',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-                    protected $fillable = [ 'title', 'slug', 'description', 'published', 'inStock', 'price', 'created_by', 'updated_by', 'deleted_by',];
-
-                    public function getSlugOptions() : SlugOptions
-                    {
-                        return SlugOptions::create()
-                            ->generateSlugsFrom('title')
-                            ->saveSlugsTo('slug');
-                    }
-                }
+            if ($userId > 0) {
+                DB::table('links')->insert([
+                    [
+                        'title' => 'Google',
+                        'user_id' => $userId, // Dùng biến thay vì hardcode 1
+                        'short_code' => 'googl123',
+                        'original_url' => 'https://www.google.com',
+                        'status' => 'active',
+                        'expires_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                    [
+                        'title' => 'Facebook',
+                        'user_id' => $userId,
+                        'short_code' => 'fb12345',
+                        'original_url' => 'https://www.facebook.com',
+                        'status' => 'active',
+                        'expires_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                ]);
+            }
+        }
 
 III. Menu Sidebar
 
@@ -848,15 +877,13 @@ V. Viết chức năng Admin
     - Viết phương thức chuyển hướng nếu là admin hoặc moderator
         public function handle(Request $request, Closure $next , $guard = null): Response
             {
-                // nếu đã đăng nhập và là admin hoặc moderator
-                if (Auth::check() && (Auth::user()->role == 'admin' || Auth::user()->role == 'moderator')) {
-                    return $next($request);
+                if (Auth::guard($guard)->check() && optional(Auth::user())->role == 'admin') {
+                    return redirect()->route('admin.dashboard');
                 }
 
-                return redirect()->route('home')->with('error', 'Access Denied, you are not an administrator');
 
+                return $next($request);
             }
-
 
     - khai báo middleware trong kennel
             use App\Http\Middleware\redirectAdmin;
@@ -1301,17 +1328,118 @@ V. Viết chức năng Admin
 
 
 
+    8. Chức năng quản lý nhóm người dùng
+        - Tạo model Group
+
+        -Tạo /Admin/GroupController,
+            php artisan make:controller Admin/GroupController
+
+            public function index(){
+                // trỏ đến file view
+                return Inertia::render('Admin/Group/Index');
+            }
+
+
+        - Tạo route cho admin group
+            Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+                ...
+                // group
+                Route::get('/groups', [GroupController::class, 'index'])->name('admin.groups.index');
+
+            });
+
+
+        - Tạo view cho admin group
+            + Tạo file /Group/Index.vue (/resources/js/pages/Admin/Group)
+
+                <template>
+                    <AdminLayout>
+                        <GroupList :groups="groups">
+
+                        </GroupList>
+                    </AdminLayout>
+                </template>
+
+                <script setup>
+                    defineProps( {
+                        groups: Array
+                    } );
+
+                    import AdminLayout from '../Components/AdminLayout.vue'
+                    import GroupList from './GroupList.vue'
+                </script>
+
+
+            + Tạo component Group List cho admin group
+                    . Tạo file Admin/Group/GroupList.vue (cùng cấp với file Index phía trên)
+                    . chọn 1 block giao diện trong https://flowbite.com/blocks/
+                    . VD chọn https://flowbite.com/blocks/application/advanced-tables/
+                    . copy code bỏ vào template của file vừa tạo
+
+
+            + Tạo component Group List cho admin Group
+                    . Tạo file Admin/Group/GroupList.vue (cùng cấp với file Index phía trên)
+                    . chọn 1 block giao diện trong https://flowbite.com/blocks/
+                    . VD chọn https://flowbite.com/blocks/application/advanced-tables/
+                    . copy code bỏ vào template của file vừa tạo
+
+            + import AdminLayout và GroupList vào page Group
+                    <script setup>
+                        import AdminLayout from '../Components/AdminLayout.vue'
+                        import GroupList from './GroupList.vue'
+                    <style lang="scss" scoped>
+
+            + Gọi Admin Layout vào page Group
+                <template>
+                    <AdminLayout>
+                        <Group>
+
+                        </Group>
+                    </AdminLayout>
+                </template>
 
 
 
+        - Tạo table group
+            id => int
+            name => varchar(100)
+            permission => text
+            created_at => timestamp
+            updated_at  => timestamp
 
 
+    9. Tạo table module (module: user, link, group, ....)
+        - ở phần module chỉ tạo table và model để lấy dữ liệu hiển thị ở permission
+        - Tạo model Module
+            php artisan make:model Module -m
 
+        - Tạo table module migration
+            $table->id();
+            $table->string('name');
+            $table->string('title');
+            $table->timestamps();
 
+        - Tạo seeder
+                DB::table('Modules')->insert([
+                    'name' => 'users',
+                    'title' => 'Quản lý người dùng',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
 
+                DB::table('Modules')->insert([
+                    'name' => 'groups',
+                    'title' => 'Quản lý nhóm',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
 
-
-
+                DB::table('Modules')->insert([
+                    'name' => 'links',
+                    'title' => 'Quản lý link',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
 
 
 

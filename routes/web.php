@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\AdminAuthController;
 
 /*
@@ -61,12 +62,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/links/destroy/{id}', [LinkController::class, 'destroy'])->name('admin.links.destroy');
     Route::get('/links/view/{id}', [LinkController::class, 'view'])->name('admin.links.view');
 
-    // link
+    // user
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::post('/users/store', [UserController::class, 'store'])->name('admin.users.store');
     Route::put('/users/update/{id}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/destroy/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::get('/users/view/{id}', [UserController::class, 'view'])->name('admin.users.view');
+
+
+    //group
+    Route::get('/groups', [GroupController::class, 'index'])->name('admin.groups.index');
+    Route::post('/groups/store', [GroupController::class, 'store'])->name('admin.groups.store');
+    Route::put('/groups/update/{id}', [GroupController::class, 'update'])->name('admin.groups.update');
+    Route::delete('/groups/destroy/{id}', [GroupController::class, 'destroy'])->name('admin.groups.destroy');
+    Route::get('/groups/permission/{id}', [GroupController::class, 'permission'])->name('admin.groups.permission');
+    Route::get('/permission/{id}', [GroupController::class, 'permission'])->name('admin.groups.permission');
 
 
 });

@@ -8,19 +8,20 @@ return new class extends Migration {
     public function up() {
         Schema::create('click_statistics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('short_link_id')->constrained('links')->onDelete('cascade');
+            $table->foreignId('link_id')->constrained('links')->onDelete('cascade');
             $table->string('ip_address', 45);
             $table->text('user_agent');
-            $table->enum('referrer', ['facebook', 'google', 'ads', 'other'])->default('other');
-            $table->enum('device_type', ['mobile', 'tablet', 'pc']);
+            $table->string('referrer', 50)->default('other');
+            $table->enum('device_type', ['mobile', 'tablet', 'pc'])->nullable();
             $table->string('os', 50);
             $table->string('country', 100)->nullable();
-            $table->timestamp('clicked_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('clicked_at')->useCurrent();
 
             $table->index('clicked_at');
             $table->index('referrer');
         });
     }
+
 
     public function down() {
         Schema::dropIfExists('click_statistics');
