@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
                 "users" => ["view", "add", "edit", "delete"],
                 "groups" => ["view", "add", "edit", "delete", "permission"]
             ]),
+            'isAdmin' => 1,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -37,10 +38,9 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('123456789'),
-                'isAdmin' => 1,
                 'group_id' => $groupId, // Dùng biến thay vì hardcode
                 'provider' => 'email',
-                'status' => 'active',
+                'status' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
                         'user_id' => $userId,
                         'short_code' => 'fb12345',
                         'original_url' => 'https://www.facebook.com',
-                        'status' => 'active',
+                        'status' => 1,
                         'expires_at' => null,
                         'created_at' => now(),
                         'updated_at' => now(),

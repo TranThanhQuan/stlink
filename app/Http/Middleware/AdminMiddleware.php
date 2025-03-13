@@ -18,7 +18,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next , $guard = null): Response
     {
 
-        if (Auth::check() && Auth::user()->isAdmin == 1){
+        if (Auth::check() && Auth::user()->group->isAdmin == 1){
             return $next($request);
         }
 

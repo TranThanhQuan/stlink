@@ -1,5 +1,92 @@
 <template>
     <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+        <!-- dialog or editing user -->
+        <el-dialog v-model="dialogVisible" title="Chỉnh Sửa thông tin người dùng" width="50%"
+            :before-close="handleClose">
+            <!-- form  start -->
+            <form class="mx-auto" @submit.prevent="UpdateUser()">
+                <div class="grid md:grid-cols-2 md:gap-6">
+                    <!-- name -->
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="text" v-model="name" name="floating_name" id="floating_name"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required />
+                        <label for="floating_name"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tên người dùng</label>
+                    </div>
+
+                    <!-- email -->
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="text" v-model="email" name="floating_email" id="floating_email"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " />
+                        <label for="floating_email"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Email</label>
+                    </div>
+                </div>
+
+
+                <div class="grid md:grid-cols-2 md:gap-6">
+
+                    <!-- vai trò -->
+                    <div class="relative z-0 w-full group">
+                        <form class="mx-auto">
+                            <label for="isAdmin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Vai trò
+                            </label>
+                            <select v-model="isAdmin" id="isAdmin" class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value=0>Người dùng (User)</option>
+                                <option value=1>Quản trị (Admin)</option>
+                            </select>
+                        </form>
+                    </div>
+
+                    <!-- Nhóm người dùng -->
+                    <div class="relative z-0 w-full group">
+                        <form class="mx-auto">
+                            <label for="group" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Nhóm người dùng
+                            </label>
+                            <select id="group" v-model="selectedGroup"
+                                class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Chọn nhóm</option>
+                                <option v-for="group in groupFillted" :value="group.id">
+                                    {{ group.name }}
+                                </option>
+                            </select>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="relative z-0 w-full mb-5 group">
+                    <form class="mx-auto">
+                        <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Trạng thái
+                        </label>
+                        <select v-model="status" id="status" class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value=1>Hoạt động</option>
+                            <option value=0>Không hoạt động</option>
+                        </select>
+                    </form>
+                </div>
+
+
+                <!-- password -->
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="password" v-model="password" name="floating_password" id="floating_password"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " />
+                    <label for="floating_password"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">password</label>
+                </div>
+
+
+                <button type="submit"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Lưu</button>
+            </form>
+        </el-dialog>
         <!-- end dialog for adding or editing user -->
 
         <div class="mx-auto px-4 lg:px-12">
@@ -26,13 +113,8 @@
                     </div>
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                        <button @click="openAddModal" type="button"
-                            class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            Thêm user
-                        </button>
+
                         <div class="flex items-center space-x-3 w-full md:w-auto">
-
-
                             <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
                                 class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                 type="button">
@@ -51,32 +133,22 @@
                             </button>
                             <div id="filterDropdown"
                                 class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-                                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Chọn trạng thái</h6>
+                                <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Vai trò</h6>
                                 <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
                                     <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
+                                        <input id="admin" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hoạt động
+                                        <label for="admin"
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Quản trị
                                             </label>
                                     </li>
 
                                     <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
+                                        <input id="User" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Không hoạt động
+                                        <label for="User" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Người dùng
                                             </label>
                                     </li>
-
-                                    <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
-                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hết hạn
-                                            </label>
-                                    </li>
-
                                 </ul>
                             </div>
                         </div>
@@ -89,10 +161,10 @@
                                 <th scope="col" class="px-4 py-3">ID</th>
                                 <th scope="col" class="px-4 py-3">Tên người dùng</th>
                                 <th scope="col" class="px-4 py-3">Email</th>
-                                <th scope="col" class="px-4 py-3">Loại tài khoản</th>
+                                <th scope="col" class="px-4 py-3">Nhóm</th>
 
                                 <th scope="col" class="px-4 py-3">Trạng thái</th>
-                                <th scope="col" class="px-4 py-3">Thời gian tạo</th>
+                                <!-- <th scope="col" class="px-4 py-3">Thời gian tạo</th> -->
 
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
@@ -113,43 +185,21 @@
                                 </td>
 
 
-
                                 <td class="px-4 py-3">
-                                    <button v-if="user.role == 'admin'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-green-800">Quản trị viên</button>
+                                    <span v-if="user.group.isAdmin == 1" class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300">{{user.group.name}}</span>
 
-                                    <button v-else-if="user.role == 'moderator'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-pink-700 rounded-lg hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-red-800">Quản lý</button>
-
-                                    <button v-else-if="user.role == 'premium'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-red-800">Premium</button>
-
-                                    <button v-else type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-red-800">Thường</button>
-
+                                    <span v-else  class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-gray-300">{{user.group.name}}</span>
                                 </td>
 
 
-
                                 <td class="px-4 py-3">
-                                    <button v-if="user.status == 'active'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Hoạt
-                                        động</button>
+                                    <span v-if="user.status == 1" class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">Hoạt động</span>
 
-
-                                    <button v-else-if="user.status == 'expired'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">Hết
-                                        hạn</button>
-
-
-                                    <button v-else type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Không
-                                        Hoạt Động</button>
-
+                                    <span v-else class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">Không hoạt động</span>
                                 </td>
 
 
-                                <td class="px-4 py-3">{{ user.created_at }}</td>
+                                <!-- <td class="px-4 py-3">{{ formatDate(user.created_at) }}</td> -->
 
 
 
@@ -259,141 +309,68 @@ import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed, onMounted } from 'vue';
 
 
-defineProps({
+const props = defineProps({
     users: Array,
 });
 
+const groups = usePage().props.groups;
 
-
-
-
-const domain = ref(window.location.hostname);
-
-//
 const truncate = (text) => {
     return text.length > 20 ? text.slice(0, 20) + '...' : text;
 };
 
-const isAddUser = ref(false);
-const editMode = ref(false);
 const dialogVisible = ref(false);
 const handleClose = () => {
     dialogVisible.value = false;
 };
 
 
-
 //user form data
-const title = ref('');
-const original_user = ref('');
-const endDate = ref('');
-const custom_halfback = ref("");
-const random_halfback = ref("");
+const name = ref("");
+const email = ref("");
+const password = ref("");
+const isAdmin = ref(null);
+const status = ref(0);
 
 //end user form data
 
+const selectedGroup = ref(0);
+const groupFillted = ref([]);
+watch(isAdmin, (newValue) => {
+    isAdmin.value = Number(newValue);
+    groupFillted.value = groups.filter(g => Number(g.isAdmin) === Number(isAdmin.value));
 
-//tạo random halfback
-const halfback = computed(() => {
-    return custom_halfback.value ? custom_halfback.value : random_halfback.value;
-});
-
-watch(original_user, (newVal) => {
-    if (newVal.trim() !== "") {
-        random_halfback.value = generateRandomString(6);
+    // Nếu selectedGroup không tồn tại trong groupFillted, đặt lại nó
+    if (!groupFillted.value.some(g => g.id === selectedGroup.value)) {
+        selectedGroup.value = "";
     }
 });
-
-function generateRandomString(length) {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length)).toLowerCase();
-    }
-    return result;
-}
-
-
-//open add modal
-const openAddModal = () => {
-    isAddUser.value = true;
-    dialogVisible.value = true;
-    editMode.value = false;
-}
 
 
 //open edit modal
 const openEditModal = (user) => {
-    editMode.value = true;
-    isAddUser.value = false;
     dialogVisible.value = true;
 
     //fill data user
     id.value = user.id;
-    title.value = user.title;
-    original_user.value = user.original_url;
-    custom_halfback.value = user.short_code;
-    endDate.value = user.expires_at;
+    name.value = user.name;
+    email.value = user.email;
+    isAdmin.value = user.group.isAdmin;
+    selectedGroup.value = user.group_id;
+    status.value = user.status;
 }
 
-
-// add user method
-const AddUser = async () => {
-    const formData = new FormData(); // tạo form
-
-    formData.append('title', title.value);
-    formData.append('original_user', original_user.value);
-    formData.append('short_code', halfback.value);
-    formData.append('endDate', endDate.value);
-
-
-    try {
-        await router.post('users/store', formData, {
-            onSuccess: (page) => {
-                if (page.props.flash.success) {
-                    Swal.fire({
-                        toast: true,
-                        icon: 'success',
-                        position: 'top',
-                        showConfirmButton: false,
-                        title: page.props.flash.success,
-                    });
-
-                    dialogVisible.value = false;
-                    resetFormData();
-                }
-            },
-            onError: (errors) => {
-                if (errors) {
-                    let errorMessages = Object.values(errors).flat().join('<br>');
-
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        position: 'top',
-                        showConfirmButton: false,
-                        title: 'Đã xảy ra lỗi!',
-                        html: errorMessages,
-                    });
-                    dialogVisible.value = false;
-
-                }
-            },
-        });
-    } catch (e) {
-        console.log(e);
-    }
-
-}
-
-
-// reset data after add
-const resetFormData = () => {
-    title.value = '';
-    original_user.value = '';
-    custom_halfback.value = '';
-    endDate.value = [];
-}
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};
 
 
 
@@ -403,13 +380,15 @@ const id = ref('');
 const UpdateUser = async () => {
     const formData = new FormData(); // tạo form
 
-    formData.append('title', title.value);
-    formData.append('original_user', original_user.value);
-    formData.append('short_code', halfback.value);
-    formData.append('endDate', endDate.value);
+    formData.append('name', name.value);
+    // formData.append('original_user', original_user.value);
+    formData.append('email', email.value);
+    formData.append('isAdmin', isAdmin.value);
+    formData.append('group_id', selectedGroup.value);
+    formData.append('status', status.value);
+
     formData.append("_method", 'PUT');
     //
-
 
     try {
         await router.post('users/update/' + id.value, formData, {

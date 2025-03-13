@@ -10,7 +10,7 @@ return new class extends Migration {
             $table->string('name', 100);
             $table->json('permissions');
             $table->unsignedBigInteger('user_id')->default(1);
-
+            $table->boolean('isAdmin')->default(0);
             $table->timestamps();
         });
 

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Group;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -22,7 +24,9 @@ class User extends Authenticatable
         'email',
         'password',
         'isAdmin',
-        'group_id'
+        'group_id',
+        // 'user'
+
 
     ];
 
@@ -46,16 +50,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Một user có thể có nhiều vai trò
-    // public function role()
-    // {
-    //     return $this->belongsTo(Role::class);
-    // }
-
-    // Một user có thể có nhiều quyền thông qua vai trò
-    // public function permissions() {
-    //     return $this->roles()->with('permissions');
-    // }
 
     // Một user có nhiều link rút gọn
     public function Links() {
@@ -63,7 +57,7 @@ class User extends Authenticatable
     }
 
     public function group(){
-        return $this->belongsTo(Groups::class);
+        return $this->belongsTo(Group::class);
     }
 
 

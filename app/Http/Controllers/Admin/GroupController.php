@@ -38,24 +38,4 @@ class GroupController extends Controller
     }
 
 
-    public function permission_old(Groups $group){
-        $this->authorize('permission', $group);
-        $modules = Module::all();
-        $roleListArr = [
-            'view' => 'Xem',
-            'add' => 'Thêm',
-            'edit' => 'Sửa',
-            'delete' => 'Xóa',
-        ];
-
-        $roleJson = $group->permissions;
-        if(!empty($roleJson)){
-            $roleArr = json_decode($roleJson, true);
-        }else{
-            $roleArr = [];
-        }
-
-        return view('admin.groups.permission', compact('group', 'modules', 'roleListArr', 'roleArr'));
-    }
-
 }

@@ -8,7 +8,7 @@
 
 <script setup>
     defineProps( {
-        users: Array
+        users: Array,
     } );
 
     import AdminLayout from '../Components/AdminLayout.vue'

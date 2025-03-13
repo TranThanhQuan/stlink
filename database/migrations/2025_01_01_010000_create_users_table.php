@@ -19,8 +19,10 @@ return new class extends Migration
             $table->enum('provider', ['email', 'google'])->default('email')->nullable();
             $table->string('provider_id')->nullable();
             $table->unsignedBigInteger('group_id');
-            $table->boolean('isAdmin')->default(0);
-            $table->enum('status', ['active', 'disabled'])->default('active');
+            // $table->boolean('isAdmin')->default(0);
+
+            $table->boolean('status')->default(1);
+            // $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
 
             // Thêm khóa ngoại

@@ -18,29 +18,25 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
-        // Lấy người dùng theo email và kiểm tra role_id là admin hoặc moderator
+        // Tìm user theo email
         $user = User::where('email', $request->email)->first();
 
+        // Kiểm tra nếu user không tồn tại hoặc không có quyền admin
+        if (!$user || !$user->group || !$user->group->isAdmin) {
 
-        // Kiểm tra nếu người dùng tồn tại và mật khẩu hợp lệ
-        if ($user && Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-
-            $permissions = json_decode($user->role->permission, true);
-            // dd($permissions);
-
-            if (in_array('login', $permissions['admin_dashboard'] ?? [])) {
-                return redirect()->route('admin.dashboard');
-            } else {
-                // Nếu không có quyền truy cập vào admin dashboard
-                Auth::logout(); // Đăng xuất nếu không có quyền
-                return redirect()->route('admin.login')->with('error', 'Bạn không có quyền truy cập vào trang quản trị.');
-            }
+            dd('Bạn không có quyền truy cập');
+            return redirect()->route('admin.login')->with('error', 'Bạn không có quyền truy cập');
         }
 
-        // Nếu thông tin đăng nhập không hợp lệ
+        // Xác thực thông tin đăng nhập
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return redirect()->route('admin.dashboard');
+        }
+
         dd('Thông tin đăng nhập không hợp lệ');
         return redirect()->route('admin.login')->with('error', 'Thông tin đăng nhập không hợp lệ');
     }
+
 
 
 
