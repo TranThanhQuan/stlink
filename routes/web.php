@@ -73,11 +73,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     //group
     Route::get('/groups', [GroupController::class, 'index'])->name('admin.groups.index');
     Route::post('/groups/store', [GroupController::class, 'store'])->name('admin.groups.store');
-    Route::put('/groups/update/{id}', [GroupController::class, 'update'])->name('admin.groups.update');
+    // Route::put('/groups/update/{id}', [GroupController::class, 'update'])->name('admin.groups.update');
     Route::delete('/groups/destroy/{id}', [GroupController::class, 'destroy'])->name('admin.groups.destroy');
     Route::get('/groups/permission/{id}', [GroupController::class, 'permission'])->name('admin.groups.permission');
-    Route::get('/permission/{id}', [GroupController::class, 'permission'])->name('admin.groups.permission');
-
+    Route::put('/groups/permission/{id}', [GroupController::class, 'updatePermission'])->name('admin.groups.updatePermission');
 
 });
 

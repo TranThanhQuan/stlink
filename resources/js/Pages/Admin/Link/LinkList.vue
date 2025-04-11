@@ -86,13 +86,12 @@
                             </div>
                         </form>
                     </div>
-                    <div
-                        class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+                    <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                         <button @click="openAddModal" type="button"
                             class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
 
                             Tạo link
-                            <svg class="w-4 h-4 text-white-800 dark:text-white" aria-hidden="true"
+                            <svg class="w-4 h-4 text-white-800 dark:text-white ml-1" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                 viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -562,4 +561,12 @@ const deleteLink = (link, index) => {
 
 <style lang="scss" scoped>
 @import "https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css";
+
+::v-deep(.el-dialog) {
+  @apply bg-white dark:bg-gray-900;
+}
+
+::v-deep(.el-dialog__title) {
+  @apply text-gray-900 dark:text-white;
+}
 </style>

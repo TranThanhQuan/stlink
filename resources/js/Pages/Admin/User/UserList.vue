@@ -1,10 +1,10 @@
 <template>
     <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
         <!-- dialog or editing user -->
-        <el-dialog v-model="dialogVisible" title="Chỉnh Sửa thông tin người dùng" width="50%"
+        <el-dialog v-model="dialogVisible" :title="editMode ? 'Chỉnh Sửa thông tin người dùng' : 'Thêm người dùng'" width="50%"
             :before-close="handleClose">
             <!-- form  start -->
-            <form class="mx-auto" @submit.prevent="UpdateUser()">
+            <form class="mx-auto" @submit.prevent="editMode ? UpdateUser() : AddUser()">
                 <div class="grid md:grid-cols-2 md:gap-6">
                     <!-- name -->
                     <div class="relative z-0 w-full mb-5 group">
@@ -60,7 +60,7 @@
                 </div>
 
                 <!-- Trạng thái -->
-                <div class="relative z-0 w-full mb-5 group">
+                <div class="relative z-0 w-full group">
                     <form class="mx-auto">
                         <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Trạng thái
@@ -113,6 +113,18 @@
                     </div>
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+
+                        <button @click="openAddModal" type="button"
+                            class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                           Thêm người dùng
+                            <svg class="w-4 h-4 text-white-800 dark:text-white ml-1" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="M5 12h14m-7 7V5" />
+                            </svg>
+
+                        </button>
 
                         <div class="flex items-center space-x-3 w-full md:w-auto">
                             <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
@@ -178,7 +190,7 @@
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{
                                     truncate(user.name)}}</th>
 
-                                <td class="px-4 py-3 text-blue-900 font-bold">
+                                <td class="px-4 py-3 text-blue-900 font-bold dark:text-white">
                                     <a :href="user.original_url" target="_blank" rel="noopener noreferrer">
                                         {{ truncate(user.email) }}
                                     </a>
@@ -331,7 +343,7 @@ const email = ref("");
 const password = ref("");
 const isAdmin = ref(null);
 const status = ref(0);
-
+const isAddUser = ref(false);
 //end user form data
 
 const selectedGroup = ref(0);
@@ -347,6 +359,15 @@ watch(isAdmin, (newValue) => {
 });
 
 
+//open add modal
+const openAddModal = () => {
+    isAddUser.value = true;
+    dialogVisible.value = true;
+    editMode.value = false;
+}
+
+
+
 //open edit modal
 const openEditModal = (user) => {
     dialogVisible.value = true;
@@ -358,6 +379,58 @@ const openEditModal = (user) => {
     isAdmin.value = user.group.isAdmin;
     selectedGroup.value = user.group_id;
     status.value = user.status;
+}
+
+
+// add link method
+const AddUser = async () => {
+    const formData = new FormData(); // tạo form
+
+    formData.append('name', name.value);
+    formData.append('email', email.value);
+    formData.append('isAdmin', isAdmin.value);
+    formData.append('group_id', selectedGroup.value);
+    formData.append('status', status.value);
+    formData.append('password', password.value);
+
+
+    try {
+        await router.post('users/store', formData, {
+            onSuccess: (page) => {
+                if (page.props.flash.success) {
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        position: 'top',
+                        showConfirmButton: false,
+                        title: page.props.flash.success,
+                    });
+
+                    dialogVisible.value = false;
+                    resetFormData();
+                }
+            },
+            onError: (errors) => {
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat().join('<br>');
+
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        position: 'top',
+                        showConfirmButton: false,
+                        title: 'Đã xảy ra lỗi!',
+                        html: errorMessages,
+                    });
+                    dialogVisible.value = false;
+
+                }
+            },
+        });
+    } catch (e) {
+        console.log(e);
+    }
+
 }
 
 const formatDate = (dateString) => {
@@ -381,7 +454,6 @@ const UpdateUser = async () => {
     const formData = new FormData(); // tạo form
 
     formData.append('name', name.value);
-    // formData.append('original_user', original_user.value);
     formData.append('email', email.value);
     formData.append('isAdmin', isAdmin.value);
     formData.append('group_id', selectedGroup.value);
@@ -471,4 +543,12 @@ const deleteUser = (user, index) => {
 
 <style lang="scss" scoped>
 @import "https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css";
+
+::v-deep(.el-dialog) {
+  @apply bg-white dark:bg-gray-900;
+}
+
+::v-deep(.el-dialog__title) {
+  @apply text-gray-900 dark:text-white;
+}
 </style>

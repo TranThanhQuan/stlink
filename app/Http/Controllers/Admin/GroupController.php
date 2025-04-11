@@ -37,5 +37,21 @@ class GroupController extends Controller
         return Inertia::render('Admin/Group/GroupDetail', [ 'group' => $group, 'modules' => $modules, 'roleListArr' => $roleListArr, 'roleArr' => $roleArr]);
     }
 
+    public function updatePermission($id, Request $request)
+    {
+        $group = Group::findOrFail($id);
+
+        if(!empty($request->role)){
+            $roleArr = $request->role;
+        }else {
+            $roleArr = [];
+        }
+
+        $group->permissions = $roleArr;
+        $group->save();
+        return redirect()->back()->with('success', 'Phân quyền thành công!');
+    }
+
+
 
 }

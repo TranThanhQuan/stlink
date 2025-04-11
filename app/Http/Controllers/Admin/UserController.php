@@ -23,6 +23,44 @@ class UserController extends Controller
         return Inertia::render('Admin/User/Index', [ 'users' => $users, 'groups' => $groups]);
     }
 
+    public function store(Request $request)
+    {
+        // Validate dữ liệu đầu vào
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email',
+            'isAdmin'   => 'required|boolean',
+            'group_id'  => 'required|exists:groups,id',
+            'status'    => 'required|boolean',
+            'password'  => 'required|string|min:6',
+        ], [
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        ]);
+
+
+        // Nếu có lỗi, trả về lỗi
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Tạo mới người dùng
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        // $user->is_admin = $request->isAdmin;
+        $user->group_id = $request->group_id;
+        $user->status = $request->status;
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('admin.users.index')->with('success', 'Thêm người dùng thành công!');
+
+    }
+
+
 
     public function update(Request $request, $id){
         // Tìm user cần cập nhật

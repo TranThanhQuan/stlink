@@ -2,7 +2,7 @@
 
     <AdminLayout>
         <div class="m-10 grid gap-5 sm:grid-cols-4 mx-auto max-w">
-            <div class="px-4 py-6 shadow-lg shadow-blue-100 rounded-lg flex items-center ">
+            <div class="px-4 py-6 shadow-lg shadow-blue-100 dark:shadow-black rounded-lg flex items-center">
                 <div class="mr-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 rounded-xl bg-rose-50 p-4 text-rose-300"
                         viewBox="0 0 20 20" fill="currentColor">
@@ -12,8 +12,8 @@
                 </div>
 
                 <div class="">
-                    <p class="mt-4 font-medium">Người dùng thường</p>
-                    <p class="mt-2 text-xl font-medium">
+                    <p class="mt-4 font-medium dark:text-white">Người dùng thường</p>
+                    <p class="mt-2 text-xl font-medium dark:text-white">
                         23.4k
                         <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <div class="px-4 py-6 shadow-lg shadow-blue-100 rounded-lg flex items-center ">
+            <div class="px-4 py-6 shadow-lg shadow-blue-100 dark:shadow-black rounded-lg flex items-center ">
                 <div class="mr-6">
 
                     <svg class="h-20 w-20 rounded-xl bg-yellow-50 p-4 text-yellow-300 " aria-hidden="true"
@@ -40,8 +40,8 @@
                 </div>
 
                 <div class="">
-                    <p class="mt-4 font-medium">Người dùng premium</p>
-                    <p class="mt-2 text-xl font-medium">
+                    <p class="mt-4 font-medium dark:text-white">Người dùng premium</p>
+                    <p class="mt-2 text-xl font-medium dark:text-white">
                         23.4k
                         <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="px-4 py-6 shadow-lg shadow-blue-100 rounded-lg flex items-center ">
+            <div class="px-4 py-6 shadow-lg shadow-blue-100 dark:shadow-black rounded-lg flex items-center ">
                 <div class="mr-6">
                     <svg class="h-20 w-20 rounded-xl bg-blue-50 p-4 text-blue-300" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -63,8 +63,8 @@
                 </div>
 
                 <div class="">
-                    <p class="mt-4 font-medium">Liên kết</p>
-                    <p class="mt-2 text-xl font-medium">
+                    <p class="mt-4 font-medium dark:text-white">Liên kết</p>
+                    <p class="mt-2 text-xl font-medium dark:text-white">
                         23.4k
                         <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div class="px-4 py-6 shadow-lg shadow-blue-100 rounded-lg flex items-center ">
+            <div class="px-4 py-6 shadow-lg shadow-blue-100 dark:shadow-black rounded-lg flex items-center ">
                 <div class="mr-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 rounded-xl bg-rose-50 p-4 text-rose-300"
                         viewBox="0 0 20 20" fill="currentColor">
@@ -88,8 +88,8 @@
                 </div>
 
                 <div class="">
-                    <p class="mt-4 font-medium">Lượt truy cập</p>
-                    <p class="mt-2 text-xl font-medium">
+                    <p class="mt-4 font-medium dark:text-white">Lượt truy cập</p>
+                    <p class="mt-2 text-xl font-medium dark:text-white">
                         23.4k
                         <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
