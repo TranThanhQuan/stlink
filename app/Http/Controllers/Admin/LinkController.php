@@ -155,7 +155,19 @@ class LinkController extends Controller
 
 
     public function view($id){
-        return 'chi tiết link id = '. $id;
+        $link = Link::findOrFail($id);
+
+
+
+
+        return Inertia::render('Admin/Link/LinkDetail', [
+                'link' => $link
+            ]);
+
+
+
+
+
     }
 
 }

@@ -12,8 +12,13 @@ import 'element-plus/dist/index.css'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-import VueTailwindDatepicker from 'vue-tailwind-datepicker';
+// datepicker
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
+import VueApexCharts from 'vue3-apexcharts';
+
+import ApexTooltipStyle from './apexchart-style';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -28,9 +33,10 @@ createInertiaApp({
         app.use(ZiggyVue)
         app.use(ElementPlus)
         app.use(VueSweetalert2)
-        app.use(VueTailwindDatepicker)
-
+        app.use(VueApexCharts)
+        app.component('VueDatePicker', VueDatePicker);
         window.Swal = app.config.globalProperties.$swal
+        app.directive('apex-tooltip-style', ApexTooltipStyle);
         app.mount(el)
     },
     progress: {

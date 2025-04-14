@@ -11,7 +11,8 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
         './node_modules/flowbite/**/*.js',
-        './node_modules/vue-tailwind-datepicker/**/*.js'
+
+
     ],
 
     theme: {

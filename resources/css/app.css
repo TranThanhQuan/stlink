@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.apexcharts-tooltip-text-y-label {
+    font-size: 13px !important;
+    color: var(--color-gray-500) !important;
+  }
+
+  .apexcharts-tooltip-text-y-value {
+    font-size: 13px !important;
+    color: #222 !important;
+  }
+
+  .apexcharts-tooltip-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+  }
+
+  .apexcharts-xaxistooltip-text {
+    font-size: 13px !important;
+    fill: #fff !important;
+    font-weight: 500 !important;
+  }

@@ -288,10 +288,4 @@ onMounted(() => {
 </script>
 
 
-<style scoped>
-.apexcharts-tooltip {
-    z-index: 10000 !important;
-    opacity: 1 !important;
-    background: white !important;
-}
-</style>
+
