@@ -282,6 +282,7 @@ const chartOptions = ref({
   chart: {
     type: 'area',
     stacked: true,
+    fontFamily: "Inter, sans-serif",
     events: {
       updated: function (chartContext, config) {
         console.log("Area Chart (Hệ điều hành) updated");
@@ -290,15 +291,18 @@ const chartOptions = ref({
     }
   },
   xaxis: {
-    categories: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'], // tháng hoặc mốc thời gian
+    categories: ['1/4', '2/4', '3/4', '4/4', '5/4', '6/4'], // tháng hoặc mốc thời gian
     title: {
-      text: 'Tháng'
+      text: 'Ngày'
     }
   },
   yaxis: {
     title: {
-      text: 'Lượt truy cập'
-    }
+      text: 'clicks'
+    },
+    style: {
+            fontFamily: "Inter, sans-serif",
+          },
   },
   tooltip: {
     shared: true,

@@ -82,7 +82,7 @@
                     </Link>
                 </li>
 
-                <li>
+                <!-- <li>
                     <button type="button"
                         class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                         aria-controls="dropdown-report" data-collapse-toggle="dropdown-report">
@@ -142,13 +142,8 @@
                                 class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Danh sách </Link>
                         </li>
-                        <!-- <li>
-                            <a href="#"
-                                class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"></a>
-                        </li> -->
-
                     </ul>
-                </li>
+                </li> -->
 
 
 

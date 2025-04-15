@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('prefix')->default('');
+
             $table->string('password')->nullable(); // Có thể null nếu đăng nhập bằng Google
             $table->enum('provider', ['email', 'google'])->default('email')->nullable();
             $table->string('provider_id')->nullable();
             $table->unsignedBigInteger('group_id');
-            // $table->boolean('isAdmin')->default(0);
 
             $table->boolean('status')->default(1);
             // $table->enum('status', ['active', 'inactive'])->default('active');

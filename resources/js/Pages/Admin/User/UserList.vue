@@ -35,6 +35,8 @@
                                 Vai trò
                             </label>
                             <select v-model="isAdmin" id="isAdmin" class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="">Chọn vai trò</option>
+
                                 <option value=0>Người dùng (User)</option>
                                 <option value=1>Quản trị (Admin)</option>
                             </select>
@@ -59,32 +61,49 @@
                     </div>
                 </div>
 
-                <!-- Trạng thái -->
-                <div class="relative z-0 w-full group">
-                    <form class="mx-auto">
-                        <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Trạng thái
-                        </label>
-                        <select v-model="status" id="status" class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option value=1>Hoạt động</option>
-                            <option value=0>Không hoạt động</option>
-                        </select>
-                    </form>
-                </div>
+                <div class="grid md:grid-cols-2 md:gap-6">
+                    <!-- prefix -->
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="text" v-model="prefix" name="floating_prefix" id="floating_prefix"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " required />
+                        <label for="floating_prefix"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tiền tố (a-z, 0-9)</label>
+                    </div>
+
+                    <!-- password -->
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="password" v-model="password" name="floating_password" id="floating_password"
+                            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            placeholder=" " />
+                        <label for="floating_password"
+                            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">password</label>
+                    </div>
 
 
-                <!-- password -->
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="password" v-model="password" name="floating_password" id="floating_password"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " />
-                    <label for="floating_password"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">password</label>
                 </div>
+
+                <div v-if="editMode" class="grid md:grid-cols-2 md:gap-6">
+
+                    <!-- Trạng thái -->
+                    <div class="relative z-0 w-full group">
+                        <form class="mx-auto">
+                            <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Trạng thái
+                            </label>
+                            <select v-model="status" id="status" class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value=1>Hoạt động</option>
+                                <option value=0>Không hoạt động</option>
+                            </select>
+                        </form>
+                    </div>
+
+                </div>
+
 
 
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Lưu</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"> {{ editMode ? 'Lưu' : 'Thêm' }}</button>
             </form>
         </el-dialog>
         <!-- end dialog for adding or editing user -->
@@ -173,6 +192,8 @@
                                 <th scope="col" class="px-4 py-3">ID</th>
                                 <th scope="col" class="px-4 py-3">Tên người dùng</th>
                                 <th scope="col" class="px-4 py-3">Email</th>
+                                <th scope="col" class="px-4 py-3">Tiền tố (Prefix)</th>
+
                                 <th scope="col" class="px-4 py-3">Nhóm</th>
 
                                 <th scope="col" class="px-4 py-3">Trạng thái</th>
@@ -195,6 +216,7 @@
                                         {{ truncate(user.email) }}
                                     </a>
                                 </td>
+                                <td class="px-4 py-3">{{ user.prefix }}</td>
 
 
                                 <td class="px-4 py-3">
@@ -340,15 +362,26 @@ const handleClose = () => {
 //user form data
 const name = ref("");
 const email = ref("");
+const prefix = ref("");
 const password = ref("");
 const isAdmin = ref(null);
 const status = ref(0);
 const isAddUser = ref(false);
+const editMode = ref(false);
+
 //end user form data
 
 const selectedGroup = ref(0);
 const groupFillted = ref([]);
 watch(isAdmin, (newValue) => {
+    isAdmin.value = newValue;
+
+    if (isAdmin.value === '') {
+        groupFillted.value = '';
+        selectedGroup.value = '';
+        return;
+    }
+
     isAdmin.value = Number(newValue);
     groupFillted.value = groups.filter(g => Number(g.isAdmin) === Number(isAdmin.value));
 
@@ -361,6 +394,11 @@ watch(isAdmin, (newValue) => {
 
 //open add modal
 const openAddModal = () => {
+    //nếu trước đó mở modal edit (vẫn còn editMode thì resetForm)
+    if(editMode.value){
+        resetFormData();
+    }
+
     isAddUser.value = true;
     dialogVisible.value = true;
     editMode.value = false;
@@ -371,14 +409,27 @@ const openAddModal = () => {
 //open edit modal
 const openEditModal = (user) => {
     dialogVisible.value = true;
+    editMode.value = true;
 
     //fill data user
     id.value = user.id;
     name.value = user.name;
     email.value = user.email;
+    prefix.value = user.prefix;
+
     isAdmin.value = user.group.isAdmin;
     selectedGroup.value = user.group_id;
     status.value = user.status;
+}
+
+function resetFormData() {
+    name.value = '';
+    email.value = '';
+    prefix.value = '';
+    isAdmin.value = '';
+    selectedGroup.value = '';
+    status.value = 0;
+    password.value = '';
 }
 
 
@@ -388,6 +439,7 @@ const AddUser = async () => {
 
     formData.append('name', name.value);
     formData.append('email', email.value);
+    formData.append('prefix', prefix.value.toLowerCase());
     formData.append('isAdmin', isAdmin.value);
     formData.append('group_id', selectedGroup.value);
     formData.append('status', status.value);
@@ -412,23 +464,27 @@ const AddUser = async () => {
             },
             onError: (errors) => {
                 if (errors) {
-                    let errorMessages = Object.values(errors).flat().join('<br>');
+                    const errorList = Object.values(errors).flat();
 
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        position: 'top',
-                        showConfirmButton: false,
-                        title: 'Đã xảy ra lỗi!',
-                        html: errorMessages,
+                    errorList.forEach((message) => {
+                        Swal.fire({
+                            toast: true,
+                            icon: 'error',
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                            title: message,
+                        });
                     });
-                    dialogVisible.value = false;
 
+                    dialogVisible.value = false;
                 }
             },
+
         });
     } catch (e) {
-        console.log(e);
+        // console.log(e);
     }
 
 }
@@ -456,6 +512,8 @@ const UpdateUser = async () => {
     formData.append('name', name.value);
     formData.append('email', email.value);
     formData.append('isAdmin', isAdmin.value);
+    formData.append('prefix', prefix.value.toLowerCase());
+
     formData.append('group_id', selectedGroup.value);
     formData.append('status', status.value);
 
@@ -497,7 +555,7 @@ const UpdateUser = async () => {
             },
         });
     } catch (e) {
-        console.log(e);
+        // console.log(e);
     }
 }
 

@@ -38,7 +38,8 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('123456789'),
-                'group_id' => $groupId, // Dùng biến thay vì hardcode
+                'prefix' => 'ad',
+                'group_id' => $groupId,
                 'provider' => 'email',
                 'status' => 1,
                 'created_at' => now(),
@@ -49,7 +50,7 @@ class DatabaseSeeder extends Seeder
                 DB::table('links')->insert([
                     [
                         'title' => 'Google',
-                        'user_id' => $userId, // Dùng biến thay vì hardcode 1
+                        'user_id' => $userId,
                         'short_code' => 'googl123',
                         'original_url' => 'https://www.google.com',
                         'status' => 'active',

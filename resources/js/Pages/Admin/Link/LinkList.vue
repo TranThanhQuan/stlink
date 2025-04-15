@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+    <section class="bg-gray-50 dark:bg-gray-900 p-3">
         <!-- dialog for adding or editing link -->
         <el-dialog v-model="dialogVisible" :title="editMode ? 'Chỉnh Sửa Link' : 'Tạo Link Rút Gọn'" width="50%"
             :before-close="handleClose">
@@ -38,33 +38,60 @@
 
 
                 <!-- date -->
-                <div class="relative z-0 w-full mb-5 group">
-                    <div>
-                        <!-- DateTime Picker -->
-                        <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
-                            Thời gian kết thúc
-                        </label>
-                        <input type="datetime-local" v-model="endDate"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            @input="logDateTime" required />
+
+
+                <div class="grid md:grid-cols-2 md:gap-6">
+                    <div v-if="editMode" class="relative z-0 w-full mb-5 group">
+                        <div>
+                            <!-- DateTime Picker -->
+                            <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
+                                Thời gian đóng
+                            </label>
+                            <input type="datetime-local" v-model="endDate"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                @input="logDateTime" required />
+                        </div>
+                    </div>
+
+                    <div class="relative z-0 w-full mb-5 group">
+                        <div>
+                            <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
+                                Trạng thái
+                            </label>
+                            <label class="inline-flex items-center mt-2 cursor-pointer">
+                                <input type="checkbox" v-model="isPublic" class="sr-only peer" />
+                                <div
+                                class="relative w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300
+                                dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700
+                                peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-full
+                                peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px]
+                                after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all
+                                dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
+                                </div>
+                                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                {{ isPublic ? 'Công khai' : 'Riêng tư' }}
+                                </span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
 
                 <div class="relative z-0 w-full mb-5 group">
                     <span>Link rút gọn: </span>
-                    <span
-                        class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">https://{{
-                        domain }}/{{ halfback }}</span>
+                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">
+                        https://{{ domain }}/{{ userPrefix }}{{ halfback }}
+                    </span>
+
                 </div>
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Gửi</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo</button>
             </form>
         </el-dialog>
 
         <!-- end dialog for adding or editing link -->
 
-        <div class="mx-auto px-4 lg:px-12">
+        <div class="mx-auto">
             <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                 <div
                     class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
@@ -134,7 +161,7 @@
                                         <input id="apple" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                         <label for="apple"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Không hoạt động ({{ statusCounts.disabled }})
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Không hoạt động ({{ statusCounts.inactive }})
                                             </label>
                                     </li>
 
@@ -175,7 +202,7 @@
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{
                                     truncate(link.title)}}</th>
 
-                                <td class="px-4 py-3 text-blue-900 font-bold">
+                                <td class="px-4 py-3 text-blue-900 dark:text-blue-200 font-bold">
                                     <a :href="link.original_url" target="_blank" rel="noopener noreferrer">
                                         {{ truncate(link.original_url) }}
                                     </a>
@@ -327,20 +354,19 @@ import { router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed, onMounted } from 'vue';
 
 
-defineProps({
+const props = defineProps({
     links: Array,
-    statusCounts: Array
+    statusCounts: Array,
+    userPrefix: String
 });
 
 
-
-
-
+const isPublic = ref(true);
 const domain = ref(window.location.hostname);
 
 //
 const truncate = (text) => {
-    return text.length > 20 ? text.slice(0, 20) + '...' : text;
+    return text.length > 25 ? text.slice(0, 25) + '...' : text;
 };
 
 const isAddLink = ref(false);
@@ -412,9 +438,8 @@ const AddLink = async () => {
 
     formData.append('title', title.value);
     formData.append('original_link', original_link.value);
-    formData.append('short_code', halfback.value);
-    formData.append('endDate', endDate.value);
-
+    formData.append('short_code', props.userPrefix+halfback.value);
+    formData.append('status', isPublic.value);
 
     try {
         await router.post('links/store', formData, {

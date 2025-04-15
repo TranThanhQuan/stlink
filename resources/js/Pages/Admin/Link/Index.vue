@@ -1,6 +1,6 @@
 <template>
     <AdminLayout>
-        <LinkList :links="links" :statusCounts="statusCounts" >
+        <LinkList :links="links" :statusCounts="statusCounts" :userPrefix="userPrefix" >
 
         </LinkList>
     </AdminLayout>
@@ -10,6 +10,7 @@
     defineProps( {
         links: Array,
         statusCounts: Array,
+        userPrefix: String,
 
     } );
 

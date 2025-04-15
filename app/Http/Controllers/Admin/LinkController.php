@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\Link;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Rules\ValidString;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class LinkController extends Controller
@@ -40,18 +41,21 @@ class LinkController extends Controller
         $statusCounts = Link::selectRaw("status, COUNT(*) as count")
         ->groupBy('status')
         ->pluck('count', 'status')
-        ->toArray(); // Chuyển sang mảng
+        ->toArray();
 
         // Đảm bảo luôn có đủ các trạng thái (nếu không có thì mặc định là 0)
         $statusCounts = array_merge([
         'active' => 0,
-        'disabled' => 0,
+        'inactive' => 0,
         'expired' => 0,
         ], $statusCounts);
 
+        $userPrefix = auth()->user()->prefix;
+
         return Inertia::render('Admin/Link/Index', [
         'links' => $links,
-        'statusCounts' => $statusCounts, // Trả về trực tiếp mà không cần check từng key
+        'statusCounts' => $statusCounts,
+        'userPrefix' => $userPrefix,
         ]);
     }
 
@@ -62,7 +66,7 @@ class LinkController extends Controller
         // Validate dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'short_code' => 'required|string|max:50|unique:links,short_code',
+            'short_code'    => ['required', 'string', 'max:50', 'unique:links,short_code' , new ValidString('Half-back')],
             'original_link' => 'required',
             'endDate' => 'nullable|date|after:today',
         ], [
@@ -93,8 +97,9 @@ class LinkController extends Controller
         $link->user_id = auth()->user()->id;
         $link->short_code = $request->short_code;
         $link->original_url = $url;
-        $link->status = 'active';
-        $link->expires_at = $request->endDate;
+        $status = filter_var($request->status, FILTER_VALIDATE_BOOLEAN); // ép về boolean trước khi kiểm tra
+        $link->status = $status ? 'active' : 'inactive';
+        $link->expires_at = Carbon::now()->addDays(30)->format('Y-m-d H:i:s');
 
         $link->save();
 
@@ -112,6 +117,8 @@ class LinkController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'short_code' => "required|string|max:50|unique:links,short_code,$id",
+            'short_code' => ['required','string','max:50',"unique:links,short_code,$id",new ValidString('Half-back')],
+
             'original_link' => 'required',
             'endDate' => 'nullable|date|after:today',
         ], [
