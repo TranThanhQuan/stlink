@@ -32,7 +32,7 @@ class LinkController extends Controller
                     'short_code' => $link->short_code,
                     'original_url' => $link->original_url,
                     'expires_at' => $link->expires_at,
-                    'status' => $link->status,
+                    'status' => $link->expires_at < now() ? 'expired' : $link->status,
                     'created_at' => Carbon::parse($link->created_at)->format('d/m/Y H:i:s'),
                 ];
             });
@@ -47,7 +47,6 @@ class LinkController extends Controller
         $statusCounts = array_merge([
         'active' => 0,
         'inactive' => 0,
-        'expired' => 0,
         ], $statusCounts);
 
         $userPrefix = auth()->user()->prefix;

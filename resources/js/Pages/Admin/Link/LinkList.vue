@@ -45,7 +45,7 @@
                         <div>
                             <!-- DateTime Picker -->
                             <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
-                                Thời gian đóng
+                                Thời gian hết hạn
                             </label>
                             <input type="datetime-local" v-model="endDate"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -53,15 +53,15 @@
                         </div>
                     </div>
 
-                    <div class="relative z-0 w-full mb-5 group">
+
+                    <div class="relative z-0 mb-5 group">
                         <div>
                             <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
                                 Trạng thái
                             </label>
                             <label class="inline-flex items-center mt-2 cursor-pointer">
                                 <input type="checkbox" v-model="isPublic" class="sr-only peer" />
-                                <div
-                                class="relative w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300
+                                <div class="relative w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300
                                 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700
                                 peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-full
                                 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px]
@@ -74,6 +74,8 @@
                             </label>
                         </div>
                     </div>
+
+
                 </div>
 
 
@@ -150,25 +152,25 @@
                                 <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Chọn trạng thái</h6>
                                 <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
                                     <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
+                                        <input id="apple1" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
+                                        <label for="apple1"
                                             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hoạt động ({{ statusCounts.active }})
                                             </label>
                                     </li>
 
                                     <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
+                                        <input id="apple2" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
+                                        <label for="apple2"
                                             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Không hoạt động ({{ statusCounts.inactive }})
                                             </label>
                                     </li>
 
                                     <li class="flex items-center">
-                                        <input id="apple" type="checkbox" value=""
+                                        <input id="apple3" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                        <label for="apple"
+                                        <label for="apple3"
                                             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hết hạn ({{ statusCounts.expired }})
                                             </label>
                                     </li>
@@ -362,6 +364,8 @@ const props = defineProps({
 
 
 const isPublic = ref(true);
+const isExpired = ref(true);
+
 const domain = ref(window.location.hostname);
 
 //
@@ -411,6 +415,9 @@ function generateRandomString(length) {
 
 //open add modal
 const openAddModal = () => {
+    if(editMode.value){
+        resetFormData();
+    }
     isAddLink.value = true;
     dialogVisible.value = true;
     editMode.value = false;
@@ -429,6 +436,8 @@ const openEditModal = (link) => {
     original_link.value = link.original_url;
     custom_halfback.value = link.short_code;
     endDate.value = link.expires_at;
+    isPublic.value = link.status === 'active' ? true : false;
+
 }
 
 
