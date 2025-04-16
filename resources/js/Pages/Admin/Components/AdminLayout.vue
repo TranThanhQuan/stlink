@@ -7,7 +7,7 @@
         <!-- Sidebar -->
         <Sidebar/>
         <!-- End Sidebar -->
-        <main class="p-4 md:ml-64 h-auto pt-16">
+        <main class="p-4 md:ml-64 min-h-screen pt-16 ">
             <slot />
         </main>
     </div>

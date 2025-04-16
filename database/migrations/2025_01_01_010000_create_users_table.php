@@ -23,7 +23,6 @@ return new class extends Migration
             $table->unsignedBigInteger('group_id');
 
             $table->boolean('status')->default(1);
-            // $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
 
             // Thêm khóa ngoại

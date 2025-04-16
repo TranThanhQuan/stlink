@@ -37,9 +37,8 @@
                 </div>
 
 
+
                 <!-- date -->
-
-
                 <div class="grid md:grid-cols-2 md:gap-6">
                     <div v-if="editMode" class="relative z-0 w-full mb-5 group">
                         <div>
@@ -51,10 +50,17 @@
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 @input="logDateTime" required />
                         </div>
+
+                        <!-- noti -->
+                        <div v-if="editMode && new Date(endDate) < new Date()" class="relative z-0 w-full mb-5 group">
+                            <span class=" bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-white">
+                                Link đã hết hạn. Thay đổi thời gian để gia hạn
+                            </span>
+                        </div>
+
                     </div>
 
-
-                    <div class="relative z-0 mb-5 group">
+                    <div v-if="editMode && new Date(endDate) > new Date()" class="relative z-0 mb-5 group">
                         <div>
                             <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
                                 Trạng thái
@@ -69,7 +75,7 @@
                                 dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
                                 </div>
                                 <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                {{ isPublic ? 'Công khai' : 'Riêng tư' }}
+                                    {{ isPublic ? 'Công khai' : 'Riêng tư' }}
                                 </span>
                             </label>
                         </div>
@@ -80,14 +86,14 @@
 
 
                 <div class="relative z-0 w-full mb-5 group">
-                    <span>Link rút gọn: </span>
+                    <span >Link rút gọn: </span>
                     <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">
                         https://{{ domain }}/{{ userPrefix }}{{ halfback }}
                     </span>
 
                 </div>
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ editMode ? 'Lưu' : 'Tạo' }}</button>
             </form>
         </el-dialog>
 
@@ -155,7 +161,8 @@
                                         <input id="apple1" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                         <label for="apple1"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"> Hoạt động ({{ statusCounts.active }})
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            Công khai ({{ statusCounts.active }})
                                             </label>
                                     </li>
 
@@ -163,7 +170,7 @@
                                         <input id="apple2" type="checkbox" value=""
                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                         <label for="apple2"
-                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Không hoạt động ({{ statusCounts.inactive }})
+                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Riêng tư ({{ statusCounts.inactive }})
                                             </label>
                                     </li>
 
@@ -190,7 +197,7 @@
                                 <th scope="col" class="px-4 py-3">Link rút gọn</th>
                                 <th scope="col" class="px-4 py-3">Người tạo</th>
                                 <th scope="col" class="px-4 py-3">Trạng thái</th>
-                                <th scope="col" class="px-4 py-3">Thời gian tạo</th>
+                                <th scope="col" class="px-4 py-3">Thời gian hết hạn</th>
 
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
@@ -219,26 +226,18 @@
                                 <td class="px-4 py-3">{{ link.user.name }}</td>
 
                                 <td class="px-4 py-3">
-                                    <button v-if="link.status == 'active'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Hoạt
-                                        động</button>
+                                    <button v-if="link.status == true" type="button"
+                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Công khai</button>
 
-
-                                    <button v-else-if="link.status == 'expired'" type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">Hết
-                                        hạn</button>
-
+                                    <button v-else-if="link.status == false" type="button"
+                                            class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Riêng tư</button>
 
                                     <button v-else type="button"
-                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Không
-                                        Hoạt Động</button>
-
+                                        class="px-3 py-2 text-xs font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800">Hết
+                                        hạn</button>
                                 </td>
 
-                                <td class="px-4 py-3">{{ link.created_at }}</td>
-
-
-
+                                <td class="px-4 py-3">{{ link.expires_at_format }}</td>
 
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <!-- Nút Dropdown -->
@@ -259,9 +258,8 @@
                                         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                             :aria-labelledby="`${link.id}-dropdown-button`">
                                             <li>
-                                                <a :href="route('admin.links.view', { id: link.id })"
-                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi
-                                                    tiết</a>
+                                                <a target="_blank" :href="route('admin.links.view', { id: link.id })"
+                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi tiết</a>
                                             </li>
                                             <li>
                                                 <button @click="openEditModal(link)"
@@ -282,11 +280,6 @@
                             </tr>
 
                         </tbody>
-
-
-
-
-
                     </table>
                 </div>
 
@@ -436,7 +429,7 @@ const openEditModal = (link) => {
     original_link.value = link.original_url;
     custom_halfback.value = link.short_code;
     endDate.value = link.expires_at;
-    isPublic.value = link.status === 'active' ? true : false;
+    isPublic.value = link.status === 1 ? true : false;
 
 }
 
@@ -510,6 +503,7 @@ const UpdateLink = async () => {
     formData.append('original_link', original_link.value);
     formData.append('short_code', halfback.value);
     formData.append('endDate', endDate.value);
+    formData.append('status', isPublic.value ? 1 : 0);
     formData.append("_method", 'PUT');
     //
 

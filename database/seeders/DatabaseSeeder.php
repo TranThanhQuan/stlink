@@ -24,7 +24,10 @@ class DatabaseSeeder extends Seeder
             'user_id' => 1,
             'permissions' => json_encode([
                 "users" => ["view", "add", "edit", "delete"],
-                "groups" => ["view", "add", "edit", "delete", "permission"]
+                "groups" => ["view", "add", "edit", "delete", "permission"],
+                "links" => ["view", "add", "edit", "delete"],
+
+
             ]),
             'isAdmin' => 1,
             'created_at' => now(),
@@ -53,8 +56,8 @@ class DatabaseSeeder extends Seeder
                         'user_id' => $userId,
                         'short_code' => 'googl123',
                         'original_url' => 'https://www.google.com',
-                        'status' => 'active',
-                        'expires_at' => null,
+                        'status' => 1,
+                        'expires_at' =>  now()->addDays(30),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ],
@@ -64,7 +67,7 @@ class DatabaseSeeder extends Seeder
                         'short_code' => 'fb12345',
                         'original_url' => 'https://www.facebook.com',
                         'status' => 1,
-                        'expires_at' => null,
+                        'expires_at' =>  now()->addDays(30),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]

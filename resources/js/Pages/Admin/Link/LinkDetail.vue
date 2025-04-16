@@ -23,8 +23,20 @@
                     </a>
                 </h4>
 
-                <h4 class="font-normal text-gray-700 dark:text-gray-400">Thời gian tồn tại: 23 Ngày 2 giờ</h4>
-                <h4 class="font-normal text-gray-700 dark:text-gray-400">Trạng thái: Công khai</h4>
+                <h4 class="font-normal text-gray-700 dark:text-gray-400">Người tạo: {{link.username}} </h4>
+                <h4 class="font-normal text-gray-700 dark:text-gray-400">Thời gian tạo: {{link.created_at_format}}</h4>
+                <h4 class="font-normal text-gray-700 dark:text-gray-400">Thời gian hết hạn: {{link.expires_at}}</h4>
+
+                <h4 v-if="link.expired"class="font-normal text-red-700 dark:text-red-400">
+                    Trạng thái: Hết hạn
+                </h4>
+
+                <h4 v-else class="font-normal text-gray-700 dark:text-gray-400">
+                    Trạng thái: {{ link.status ? 'Công khai' : 'Riêng tư' }}
+                </h4>
+
+
+
 
             </div>
 

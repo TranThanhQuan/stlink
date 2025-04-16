@@ -11,8 +11,8 @@ return new class extends Migration {
             $table->string('title', 255);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('short_code', 20)->unique();
-            $table->string('original_url', 2083); // Dùng string thay vì text để tối ưu
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('original_url', 2083);
+            $table->boolean('status')->default(1);
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
 
