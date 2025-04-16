@@ -34,4 +34,14 @@ class AdminController extends Controller
     //     $request->session()->invalidate();  // hủy session hiện tại
     //     return redirect()->route('admin.login');
     // }
+
+    public function dashboard()
+    {
+        return Inertia::render('Admin/Dashboard', [
+            'userName' => 'Nguyễn Văn a',
+        ]);
+    }
+
+
+
 }

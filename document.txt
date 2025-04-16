@@ -1051,6 +1051,48 @@ V. Viết chức năng Admin
                 import { Link } from "@inertiajs/vue3";
             </script>
 
+        - Để hiển thị thông tin user (ví dụ: Hello, userName) ở component Navbar có thể truyền data từ Laravel sang Vue thông qua Inertia shared props.
+                + Tạo Inertia shared data trong AppServiceProvider
+                        ✅ auth.user sẽ được chia sẻ tới mọi component Vue mà không cần truyền thủ công mỗi lần render.
+                        public function boot()
+                        {
+                            Inertia::share([
+                                'auth.user' => function () {
+                                    return Auth::check() ? [
+                                        'name' => Auth::user()->name,
+                                        'email' => Auth::user()->email,
+                                        // thêm các thông tin khác nếu cần
+                                    ] : null;
+                                },
+                            ]);
+                        }
+
+
+                + Sử dụng trong component Navbar.vue
+
+
+                    <script setup>
+                        import { usePage } from '@inertiajs/vue3'
+
+                        const page = usePage()
+                        const user = page.props.auth.user
+                    </script>
+
+                    <template>
+                        <nav class="bg-white shadow p-4">
+                            <div>
+                            <span v-if="user">Hello, {{ user.name }}</span>
+                            <span v-else>Hello, Guest</span>
+                            </div>
+                        </nav>
+                    </template>
+
+
+
+
+
+
+
 
 
     5.Tạo view cho dashboard
@@ -1440,7 +1482,6 @@ V. Viết chức năng Admin
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s')
                 ]);
-
 
 
 
