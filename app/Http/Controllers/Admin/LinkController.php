@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Models\Link;
 use App\Models\User;
+use App\Models\ClickStatistic;
 use Inertia\Inertia;
 use App\Rules\ValidString;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class LinkController extends Controller
@@ -61,7 +63,6 @@ class LinkController extends Controller
 
 
         $userPrefix = auth()->user()->prefix;
-
         return Inertia::render('Admin/Link/Index', [
             'links' => $links,
             'statusCounts' => $statusCounts,
@@ -169,6 +170,8 @@ class LinkController extends Controller
         $link = Link::findOrFail($id);
         $link->delete();
         return redirect()->route('admin.links.index')->with('success', 'Xóa link thành công!');
+        // return redirect()->back()->with('success', 'Xóa link thành công!');
+
     }
 
 
@@ -186,5 +189,115 @@ class LinkController extends Controller
     }
 
 
+    public function show(Request $request, $short_code)
+    {
+        $link = Link::where('short_code', $short_code)->first();
+
+        if (!$link) {
+            return Inertia::render('Errors/NotFound')->toResponse($request)->setStatusCode(404);
+        }
+
+        // Kiểm tra xem link đã hết hạn hay chưa
+        if ($link->expires_at && Carbon::parse($link->expires_at)->isPast()) {
+            return response()->json(['error' => 'Link đã hết hạn.'], 410);
+        }
+        // Kiểm tra xem link có bị khóa hay không
+        if ($link->status == 0) {
+            return Inertia::render('Errors/NotFound')->toResponse($request)->setStatusCode(404);
+        }
+
+        // Lấy User Agent
+        $agent = $request->header('User-Agent');
+
+        // Phân tích hệ điều hành, trình duyệt và nền tảng
+        $os = $this->detectOS($agent);
+        $browser = $this->detectBrowser($agent);
+        $platform = $this->detectPlatform($agent);
+
+        // Lấy IP và quốc gia
+        $ip = $request->ip();
+        $country = $this->getCountryFromIP($ip);
+
+        // Lưu thông tin vào cơ sở dữ liệu
+        $link->clickStatistics()->create([
+            'ip_address' => $ip,
+            'referrer' => $request->header('referer'),
+            'os' => $os,
+            'browser' => $browser,
+            'platform' => $platform,
+            'country' => $country,
+        ]);
+
+        // Chuyển hướng đến link gốc
+        return redirect()->away($link->original_url);
+    }
+
+
+
+
+
+    private function detectOS($agent)
+    {
+        $oses = [
+            'Windows' => 'Windows',
+            'Macintosh' => 'Mac OS',
+            'iPhone' => 'ios',
+            'Android' => 'Android',
+            'Linux' => 'Linux',
+        ];
+
+        foreach ($oses as $key => $os) {
+            if (stripos($agent, $key) !== false) {
+                return $os;
+            }
+        }
+
+        return 'Unknown';
+    }
+
+    private function detectBrowser($agent)
+    {
+        $browsers = [
+            'Chrome' => 'Chrome',
+            'Firefox' => 'Firefox',
+            'Safari' => 'Safari',
+            'Edge' => 'Edge',
+            'Opera' => 'Opera',
+            'MSIE' => 'Internet Explorer',
+        ];
+
+        foreach ($browsers as $key => $browser) {
+            if (stripos($agent, $key) !== false) {
+                return $browser;
+            }
+        }
+
+        return 'Unknown';
+    }
+
+    private function detectPlatform($agent)
+    {
+        if (preg_match('/mobile/i', $agent)) {
+            return 'Mobile';
+        } elseif (preg_match('/tablet/i', $agent)) {
+            return 'Tablet';
+        } else {
+            return 'Desktop';
+        }
+    }
+
+    private function getCountryFromIP($ip)
+        {
+            try {
+                $response = Http::get("http://ip-api.com/json/{$ip}?fields=country");
+                if ($response->ok()) {
+                    return $response->json('country') ?? 'Unknown';
+                }
+            } catch (\Exception $e) {
+                return 'Unknown';
+            }
+
+            return 'Unknown';
+        }
 
 }

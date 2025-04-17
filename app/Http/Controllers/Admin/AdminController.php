@@ -35,12 +35,7 @@ class AdminController extends Controller
     //     return redirect()->route('admin.login');
     // }
 
-    public function dashboard()
-    {
-        return Inertia::render('Admin/Dashboard', [
-            'userName' => 'Nguyễn Văn a',
-        ]);
-    }
+
 
 
 

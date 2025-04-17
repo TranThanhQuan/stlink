@@ -78,7 +78,7 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961" />
                         </svg>
-                    <span class="ml-3">Quản lý link</span>
+                    <span class="ml-3">Quản lý liên kết</span>
                     </Link>
                 </li>
 
@@ -184,6 +184,24 @@
                             Cấu hình premium </Link>
                         </li>
                     </ul>
+                </li>
+            </ul>
+
+        </div>
+
+
+        <div class=" absolute bottom-0 left-0 justify-start p-4 space-x-4 w-full lg:flex bg-white dark:bg-gray-800 z-20">
+
+            <ul class="space-y-2 w-full">
+                <li >
+                    <Link :href="route('logout')" method="post" as="button"
+                        class="flex items-center w-full p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+
+                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"></path>
+                            </svg>
+                            <span class="ml-3">Đăng xuất</span>
+                    </Link>
                 </li>
             </ul>
 

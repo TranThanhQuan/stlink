@@ -1,7 +1,7 @@
 <template>
     <div class="antialiased bg-white-50 dark:bg-gray-900">
         <!-- Navbar -->
-        <Navbar :userPrefix="userPrefix" :userName="userName"/>
+        <Navbar/>
         <!-- End Navbar -->
 
         <!-- Sidebar -->
@@ -19,12 +19,6 @@
     import Navbar from "./Navbar.vue";
     import Sidebar from "./Sidebar.vue";
 
-
-    const userName = 'acv0';
-    defineProps( {
-        userPrefix: String,
-        userName: String, // Accept userName as a prop
-    } );
     // initialize components based on data attribute selectors
     onMounted(() => {
         initFlowbite();

@@ -350,8 +350,8 @@ import { ref, watch, computed, onMounted } from 'vue';
 
 
 const props = defineProps({
-    links: Array,
-    statusCounts: Array,
+    links: Object,
+    statusCounts: Object,
     userPrefix: String
 });
 
@@ -453,6 +453,8 @@ const AddLink = async () => {
                         position: 'top',
                         showConfirmButton: false,
                         title: page.props.flash.success,
+                        timer: 5000,
+                        timerProgressBar: true,
                     });
 
                     dialogVisible.value = false;
@@ -466,6 +468,8 @@ const AddLink = async () => {
                     Swal.fire({
                         toast: true,
                         icon: 'error',
+                        timer: 5000,
+                        timerProgressBar: true,
                         position: 'top',
                         showConfirmButton: false,
                         title: 'Đã xảy ra lỗi!',
@@ -518,6 +522,8 @@ const UpdateLink = async () => {
                         position: 'top',
                         showConfirmButton: false,
                         title: page.props.flash.success,
+                        timer: 5000,
+                        timerProgressBar: true,
                     });
 
                     dialogVisible.value = false;
@@ -535,6 +541,8 @@ const UpdateLink = async () => {
                         showConfirmButton: false,
                         title: 'Đã xảy ra lỗi!',
                         html: errorMessages,
+                        timer: 5000,
+                        timerProgressBar: true,
                     });
                     dialogVisible.value = false;
                     resetFormData();
@@ -563,18 +571,39 @@ const deleteLink = (link, index) => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                router.delete('links/destroy/' + link.id, link, {
+                router.delete('links/destroy/' + link.id, {
                     onSuccess: (page) => {
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            position: 'top',
-                            showConfirmButton: false,
-                            title: page.props.flash.success,
-                        });
-                        this.delete(product, index);
-                    }
+                        if (page.props.flash.success) {
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                position: 'top',
+                                showConfirmButton: false,
+                                title: page.props.flash.success,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
 
+                            dialogVisible.value = false;
+                        }
+                    },
+                    onError: (errors) => {
+                        if (errors) {
+                            let errorMessages = Object.values(errors).flat().join('<br>');
+
+                            Swal.fire({
+                                toast: true,
+                                icon: 'error',
+                                position: 'top',
+                                showConfirmButton: false,
+                                title: 'Đã xảy ra lỗi!',
+                                html: errorMessages,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            dialogVisible.value = false;
+                        }
+                    },
                 });
             } catch (e) {
                 console.log(e);

@@ -150,7 +150,12 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công!');
     }
 
-
+    function destroy($id){
+        $user = User::findOrFail($id);
+        // dd($user);
+        $user->delete();
+        return redirect()->route('admin.users.index')->with('success', 'Xóa người dùng thành công!');
+    }
 
 
 

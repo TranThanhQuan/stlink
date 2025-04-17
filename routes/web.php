@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\AdminAuthController;
 |
 */
 
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -86,5 +88,32 @@ Route::group(['prefix' => 'admin' , 'middleware' => 'redirectAdmin'],function ()
     Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login.post');
     Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Guest Routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::get('/{short_code}', [LinkController::class, 'show']);
+
+
+
+
+
+
+
+
+
+
+// Fallback cho tất cả route không khớp
+Route::fallback(function () {
+    return Inertia::render('Errors/NotFound')->toResponse(request())->setStatusCode(404);
+});
+
+
 
 require __DIR__.'/auth.php';

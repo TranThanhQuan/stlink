@@ -16,7 +16,7 @@ class Link extends Model
     }
 
     // Một link có nhiều lượt click
-    public function clicks() {
+    public function clickStatistics() {
         return $this->hasMany(ClickStatistic::class);
     }
 }

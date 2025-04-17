@@ -562,8 +562,9 @@ const UpdateUser = async () => {
 
 //delete user
 const deleteUser = (user, index) => {
+    console.log(user);
     Swal.fire({
-        title: 'Bạn có muốn xóa user?',
+        title: 'Bạn có muốn xóa '+user.name+'?',
         text: "Không thể hoàn tác hành động này!",
         icon: 'warning',
         showCancelButton: true,
@@ -575,7 +576,7 @@ const deleteUser = (user, index) => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                router.delete('users/destroy/' + user.id, user, {
+                router.delete('users/destroy/' + user.id, {
                     onSuccess: (page) => {
                         Swal.fire({
                             toast: true,

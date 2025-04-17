@@ -77,17 +77,17 @@
                         <span class="block text-sm font-semibold text-gray-900 dark:text-white">Xin chào, {{ user.name }}</span>
                         <span class="block text-sm text-gray-900 truncate dark:text-white">{{ user.email }}</span>
                     </div>
-                    <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
+                    <!-- <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
                         <li>
                             <a href="#"
                                 class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white-400 dark:hover:text-white">Hồ sơ cá nhân</a>
                         </li>
-                        <!-- <li>
+                        <li>
                             <a href="#"
                                 class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Account
                                 settings</a>
-                        </li> -->
-                    </ul>
+                        </li>
+                    </ul> -->
 
                     <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
                         <li>
@@ -111,13 +111,6 @@ import { Link, usePage } from "@inertiajs/vue3";
 const page = usePage();
 const user = page.props.auth.user;
 
-
-const props = defineProps({
-    userPrefix: String,
-    userName: String, // Accept userName as a prop
-});
-
-console.log("User in Navbar:", props);
 
 
 

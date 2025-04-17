@@ -9,17 +9,21 @@ return new class extends Migration {
         Schema::create('click_statistics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('link_id')->constrained('links')->onDelete('cascade');
-            $table->string('ip_address', 45);
-            $table->text('user_agent');
-            $table->string('referrer', 50)->default('other');
-            $table->enum('device_type', ['mobile', 'tablet', 'pc'])->nullable();
+            $table->string('ip_address', 45)->nullable();
+            $table->string('referrer', 50)->nullable();
             $table->string('os', 50);
             $table->string('country', 100)->nullable();
-            $table->timestamp('clicked_at')->useCurrent();
+            $table->string('browser', 100)->nullable();
+            $table->string('platform', 50);
+            $table->timestamps();
 
-            $table->index('clicked_at');
-            $table->index('referrer');
+            $table->index('created_at');
+            $table->index('os');
+            $table->index('country');
+            $table->index('browser');
+            $table->index('platform');
         });
+
     }
 
 

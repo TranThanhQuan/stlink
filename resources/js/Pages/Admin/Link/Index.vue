@@ -1,6 +1,6 @@
 <template>
     <AdminLayout :userPrefix="userPrefix">
-        <LinkList :links="links" :statusCounts="statusCounts" :userPrefix="userPrefix" >
+        <LinkList :links="links" :statusCounts="statusCounts" :userPrefix="userPrefix">
 
         </LinkList>
     </AdminLayout>
@@ -8,12 +8,12 @@
 
 <script setup>
     const props = defineProps({
-        links: Array,
-        statusCounts: Array,
+        links: Object,
+        statusCounts: Object,
         userPrefix: String,
     });
 
-    console.log("User in Navbar:", props.userPrefix);
+
 
     import AdminLayout from '../Components/AdminLayout.vue';
     import LinkList from './LinkList.vue';
