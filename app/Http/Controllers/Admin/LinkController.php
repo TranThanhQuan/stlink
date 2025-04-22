@@ -176,12 +176,181 @@ class LinkController extends Controller
 
 
 
-    public function view($id){
+    public function view(Request $request ,$id){
         $link = Link::findOrFail($id);
         $link->created_at_format = Carbon::parse($link->created_at)->format('d/m/Y H:i:s');
         $link->expired = Carbon::parse($link->expires_at)->gt(now()) ? 0 : 1;
         $link->expires_at = Carbon::parse($link->expires_at)->format('d/m/Y H:i:s');
         $link->username =  $link->user->name ?? null;
+
+        // lấy tổng lượt clicks
+        $link->total_clicks = ClickStatistic::where('link_id', $link->id)->count();
+
+        // lấy top os click nhiều nhất
+        $link->top_os = ClickStatistic::select('os', \DB::raw('count(*) as total'))
+            ->where('link_id', $link->id)
+            ->groupBy('os')
+            ->orderBy('total', 'desc')
+            ->limit(1)
+            ->pluck('os')->first();
+
+        // lấy top quốc gia (country) click nhiều nhất
+        $link->top_country = ClickStatistic::select('country', \DB::raw('count(*) as total'))
+            ->where('link_id', $link->id)
+            ->groupBy('country')
+            ->orderBy('total', 'desc')
+            ->limit(1)
+            ->pluck('country')->first();
+
+        // // thống kê lượt click 7 ngày gần nhất trả về dạng mảng nếu không có dữ liệu thì trả về giá trị = 0
+        // $clicks = ClickStatistic::select(\DB::raw('DATE(created_at) as date'), \DB::raw('count(*) as total'))
+        //     ->where('link_id', $link->id)
+        //     ->where('created_at', '>=', now()->subDays(7))
+        //     ->groupBy('date')
+        //     ->orderBy('date', 'asc')
+        //     ->pluck('total', 'date');
+        // $dates = [];
+        // for ($i = 6; $i >= 0; $i--) {
+        //     $date = now()->subDays($i)->format('Y-m-d');
+        //     $dates[$date] = $clicks->get($date, 0);
+        // }
+        // $link->clicks = $dates;
+
+        // thống kê lượt click theo hệ điều hành có trong database trả về dạng mảng nếu không có dữ liệu thì trả về giá trị = 0
+        // $oses = ClickStatistic::select('os', \DB::raw('count(*) as total'))
+        //     ->where('link_id', $link->id)
+        //     ->groupBy('os')
+        //     ->orderBy('total', 'desc')
+        //     ->pluck('total', 'os');
+        // $link->oses = $oses;
+
+        // thống kê lượt click theo quốc gia có trong database trả về dạng mảng nếu không có dữ liệu thì trả về giá trị = 0
+        // $countries = ClickStatistic::select('country', \DB::raw('count(*) as total'))
+        //     ->where('link_id', $link->id)
+        //     ->groupBy('country')
+        //     ->orderBy('total', 'desc')
+        //     ->pluck('total', 'country');
+        // $link->countries = $countries;
+
+
+
+        ////////////////////////////////
+         // Kiểm tra định dạng ngày tháng
+        // $validator = Validator::make($request->all(), [
+        //     'startDate' => 'required|date',
+        //     'endDate' => 'required|date|after_or_equal:startDate',
+        // ], [
+        //     'startDate.required' => 'Vui lòng nhập ngày bắt đầu.',
+        //     'endDate.required' => 'Vui lòng nhập ngày kết thúc.',
+        //     'endDate.after_or_equal' => 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.',
+        // ]);
+
+    //    Nếu có lỗi, quay lại trang trước với lỗi
+        // if ($validator->fails()) {
+        //     return response()->json(['error' => $validator->errors()], 422);
+        // }
+
+        // // Nếu có lỗi, quay lại trang trước với lỗi
+        // if ($validator->fails()) {
+        //     return response()->json(['error' => $validator->errors()], 422);
+        // }
+
+        // Lấy dữ liệu từ request
+
+
+        $startDate = $request->startDate
+            ? Carbon::parse($request->startDate)
+            : Carbon::now()->subDays(7); // Lấy 7 ngày, tính cả hôm nay
+
+        $endDate = $request->endDate
+            ? Carbon::parse($request->endDate)
+            : Carbon::now(); // Hôm nay
+
+        $type = $request->type ?? 'clicks';
+
+
+        // lấy dữ liệu thống kê theo loại và thời gian bắt đầu và kết thúc nếu không có dữ liệu thì trả về ngày và giá trị = 0
+
+
+
+        // kiểm tra loại (clicks, os, country) và lấy dữ liệu tương ứng
+        if ($type == 'clicks') {
+            $clicks = ClickStatistic::select(\DB::raw('DATE(created_at) as date'), \DB::raw('count(*) as total'))
+                ->where('link_id', $link->id)
+                ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+                ->groupBy('date')
+                ->orderBy('date', 'desc')
+                ->pluck('total', 'date');
+            $dates = [];
+            for ($i = $startDate->diffInDays($endDate); $i >= 0; $i--) {
+                $date = $startDate->copy()->addDays($i)->format('Y-m-d');
+                $dates[$date] = $clicks->get($date, 0);
+            }
+            $link->clicks = $dates;
+        } elseif ($type == 'os') {
+
+                // Fetch OS statistics grouped by date and OS
+                $stats = ClickStatistic::select(
+                    \DB::raw('DATE(created_at) as date'),
+                    'os',
+                    \DB::raw('count(*) as total')
+                )
+                ->where('link_id', $link->id)
+                ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+                ->groupBy('date', 'os')
+                ->orderBy('date', 'asc')
+                ->get();
+
+                // Initialize the data structure
+                $osData = [];
+                $allOS = ClickStatistic::select('os')
+                    ->distinct()
+                    ->pluck('os')
+                    ->map(function ($os) {
+                        return ucfirst(strtolower($os ?? 'Unknown')); // Normalize OS names
+                    })
+                    ->toArray();
+
+                // Define all OS names (including default "Unknown")
+                $defaultOS = ['Android', 'Ios', 'Unknown', 'Windows'];
+
+                // Initialize dates with 0 values for all OS types
+                for ($i = 0; $i <= $startDate->diffInDays($endDate); $i++) {
+                    $date = $startDate->copy()->addDays($i)->format('Y-m-d');
+                    $osData[$date] = array_fill_keys($defaultOS, 0); // Set default values for all OS types
+                }
+
+                // Populate the data with actual statistics
+                foreach ($stats as $stat) {
+                    $date = $stat->date;
+                    $os = ucfirst(strtolower($stat->os ?? 'Unknown')); // Normalize OS names
+                    $total = $stat->total;
+
+                    // If the date exists in the osData array, update the corresponding OS data
+                    if (isset($osData[$date])) {
+                        $osData[$date][$os] = $total;
+                    }
+                }
+
+
+                $link->os = $osData;
+
+
+        } elseif ($type == 'country') {
+            $countries = ClickStatistic::select('country', \DB::raw('count(*) as total'))
+                ->where('link_id', $link->id)
+                ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+                ->groupBy('country')
+                ->orderBy('total', 'desc')
+                ->pluck('total', 'country');
+            $link->country = $countries;
+        }else {
+            return redirect()->route('admin.links.index')->with('errors', 'Không có dữ liệu phù hợp!');
+        }
+
+        if ($request->type){
+            // dd($request->all());
+        }
 
         return Inertia::render('Admin/Link/LinkDetail', [
                 'link' => $link
@@ -189,7 +358,80 @@ class LinkController extends Controller
     }
 
 
-    public function show(Request $request, $short_code)
+    // public function chart(Request $request, $id){
+    //     $link = Link::findOrFail($id);
+
+    //     // Kiểm tra định dạng ngày tháng
+    //     $validator = Validator::make($request->all(), [
+    //         'startDate' => 'required|date',
+    //         'endDate' => 'required|date|after_or_equal:startDate',
+    //     ], [
+    //         'startDate.required' => 'Vui lòng nhập ngày bắt đầu.',
+    //         'endDate.required' => 'Vui lòng nhập ngày kết thúc.',
+    //         'endDate.after_or_equal' => 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.',
+    //     ]);
+
+    //    // Nếu có lỗi, quay lại trang trước với lỗi
+    //     if ($validator->fails()) {
+    //         return response()->json(['error' => $validator->errors()], 422);
+    //     }
+
+    //     // Lấy dữ liệu từ request
+    //     $startDate = Carbon::parse($request->startDate);
+    //     $endDate = Carbon::parse($request->endDate);
+
+    //     $type = $request->type;
+
+    //     // lấy dữ liệu thống kê theo loại và thời gian bắt đầu và kết thúc nếu không có dữ liệu thì trả về ngày và giá trị = 0
+
+
+
+    //     // kiểm tra loại (clicks, os, country) và lấy dữ liệu tương ứng
+    //     if ($type == 'clicks') {
+    //         $clicks = ClickStatistic::select(\DB::raw('DATE(created_at) as date'), \DB::raw('count(*) as total'))
+    //             ->where('link_id', $link->id)
+    //             ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+    //             ->groupBy('date')
+    //             ->orderBy('date', 'asc')
+    //             ->pluck('total', 'date');
+    //         $dates = [];
+    //         for ($i = $startDate->diffInDays($endDate); $i >= 0; $i--) {
+    //             $date = $startDate->copy()->addDays($i)->format('Y-m-d');
+    //             $dates[$date] = $clicks->get($date, 0);
+    //         }
+    //         $link->clicks = $dates;
+    //     } elseif ($type == 'os') {
+    //         $oses = ClickStatistic::select('os', \DB::raw('count(*) as total'))
+    //             ->where('link_id', $link->id)
+    //             ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+    //             ->groupBy('os')
+    //             ->orderBy('total', 'desc')
+    //             ->pluck('total', 'os');
+    //         $link->oses = $oses;
+    //     } elseif ($type == 'country') {
+    //         $countries = ClickStatistic::select('country', \DB::raw('count(*) as total'))
+    //             ->where('link_id', $link->id)
+    //             ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
+    //             ->groupBy('country')
+    //             ->orderBy('total', 'desc')
+    //             ->pluck('total', 'country');
+    //         $link->countries = $countries;
+    //     }else {
+    //         return redirect()->route('admin.links.index')->with('errors', 'Không có dữ liệu phù hợp!');
+    //     }
+
+    //     // trả về dữ liệu thống kê inertial
+    //     return Inertia::render('Admin/Link/LinkDetail', [
+    //         'link' => $link,
+    //         'type' => $type,
+    //         'startDate' => $startDate->format('Y-m-d'),
+    //         'endDate' => $endDate->format('Y-m-d'),
+    //     ]);
+
+    // }
+
+
+    public function tracking(Request $request, $short_code)
     {
         $link = Link::where('short_code', $short_code)->first();
 
@@ -199,7 +441,10 @@ class LinkController extends Controller
 
         // Kiểm tra xem link đã hết hạn hay chưa
         if ($link->expires_at && Carbon::parse($link->expires_at)->isPast()) {
-            return response()->json(['error' => 'Link đã hết hạn.'], 410);
+            // return response()->json(['error' => 'Link đã hết hạn.'], 410);
+            return Inertia::render('Errors/Expired')->toResponse($request)->setStatusCode(410);
+
+
         }
         // Kiểm tra xem link có bị khóa hay không
         if ($link->status == 0) {

@@ -64,6 +64,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/links/destroy/{id}', [LinkController::class, 'destroy'])->name('admin.links.destroy');
     Route::get('/links/view/{id}', [LinkController::class, 'view'])->name('admin.links.view');
 
+    // tạo route lấy dữ liệu chart theo ngày
+    // Route::get('/links/view/chart/{id}', [LinkController::class, 'view'])->name('admin.links.chart');
+
+
     // user
     Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::post('/users/store', [UserController::class, 'store'])->name('admin.users.store');
@@ -98,7 +102,7 @@ Route::group(['prefix' => 'admin' , 'middleware' => 'redirectAdmin'],function ()
 |--------------------------------------------------------------------------
 |
 */
-Route::get('/{short_code}', [LinkController::class, 'show']);
+Route::get('/{short_code}', [LinkController::class, 'tracking']);
 
 
 
