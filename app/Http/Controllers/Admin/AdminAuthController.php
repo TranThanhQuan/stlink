@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminAuthController extends Controller
 {
@@ -29,11 +30,21 @@ class AdminAuthController extends Controller
         }
 
         // Xác thực thông tin đăng nhập
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        // if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        //     return redirect()->route('admin.dashboard');
+        // }
+
+        if (Hash::check($request->password, $user->password)) {
+            // Mật khẩu đúng
+            Auth::login($user); // Đăng nhập người dùng thủ công
             return redirect()->route('admin.dashboard');
+        }else{
+            // Mật khẩu sai
+            dd($request->all());
+            return redirect()->route('admin.login')->with('error', 'Mật khẩu không đúng');
         }
 
-        dd('Thông tin đăng nhập không hợp lệ');
+
         return redirect()->route('admin.login')->with('error', 'Thông tin đăng nhập không hợp lệ');
     }
 
