@@ -7,16 +7,37 @@
             <form class="mx-auto" @submit.prevent="editMode ? Updategroup() : Addgroup()">
                 <!-- title -->
                 <div class="relative z-0 w-full mb-5 group">
-                    <input type="text" v-model="title" name="floating_title" id="floating_title"
+                    <input type="text" v-model="name" name="floating_name" id="floating_name"
                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                         placeholder=" " required />
-                    <label for="floating_title"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tiêu
-                        đề</label>
+                    <label for="floating_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-3 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-2">Tên nhóm</label>
+                </div>
+
+                <!-- title -->
+                <div  class="relative z-0 mb-5 group">
+                    <div>
+                        <label class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">
+                            Quyền quản trị (admin)
+                        </label>
+                        <label class="inline-flex items-center mt-2 cursor-pointer">
+                            <input type="checkbox" v-model="isAdmin" class="sr-only peer" />
+                            <div class="relative w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300
+                            dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700
+                            peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-full
+                            peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px]
+                            after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all
+                            dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600">
+                            </div>
+                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                {{ isAdmin ? 'Có' : 'Không' }}
+                            </span>
+                        </label>
+                    </div>
                 </div>
 
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Gửi</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo</button>
             </form>
         </el-dialog>
 
@@ -47,49 +68,6 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <!-- <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-4 py-3">ID</th>
-                                <th scope="col" class="px-4 py-3">Tên nhóm</th>
-                                <th scope="col" class="px-4 py-3 text-center">Action</th>
-
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b dark:border-gray-700">
-                                <td class="px-4 py-3">#1</td>
-                                <th scope="row"
-                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"> Admin</th>
-
-                                <td class="px-4 py-3 text-blue-900 font-bold text-center">
-
-                                    <Link :href="route('admin.groups.permission', { id: 1 })"
-                                class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                            Phân quyền </Link>
-
-                                    <button @click="openEditModal(group)"
-                                        class="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900">
-                                        Chỉnh sửa
-                                    </button>
-
-                                    <button  @click="deleteLink(group, index)"
-                                        class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-                                        Xóa
-                                    </button>
-
-                                </td>
-
-
-
-                            </tr>
-
-                        </tbody>
-
-
-                    </table> -->
-
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -110,17 +88,9 @@
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ group.user.name }}</th>
 
-                                <!-- <td class="px-4 py-3 text-blue-900 font-bold">
-                                    <a :href="route('admin.groups.view', { id: group.id })"
-                                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Xem</a>
-                                </td> -->
-
-
-
-
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <!-- Nút Dropdown -->
-                                    <button :id="`${group.id}-dropdown-button`"
+                                    <button v-if="group.id !== 1" :id="`${group.id}-dropdown-button`"
                                         :data-dropdown-toggle="`${group.id}-dropdown`"
                                         class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
                                         type="button">
@@ -132,21 +102,12 @@
                                     </button>
 
                                     <!-- Dropdown Menu -->
-                                    <div :id="`${group.id}-dropdown`"
+                                    <div v-if="group.id !== 1" :id="`${group.id}-dropdown`"
                                         class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                                         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                             :aria-labelledby="`${group.id}-dropdown-button`">
-                                            <!-- <li>
-                                                <a :href="route('admin.groups.view', { id: group.id })"
-                                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi
-                                                    tiết</a>
-                                            </li> -->
-                                            <li>
-                                                <!-- <button @click="openEditModal(group)"
-                                                    class="block w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left">
-                                                    Phân quyền
-                                                </button> -->
 
+                                            <li>
                                                 <a :href="route('admin.groups.permission', { id: group.id })"
                                                     class="block w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left">Chỉnh sửa</a>
                                             </li>
@@ -176,19 +137,23 @@
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { router, usePage , Link } from '@inertiajs/vue3';
 
 
 defineProps({
     groups: Array,
 });
+const dialogVisible = ref(false);
+const isAddgroup = ref(false);
+const editMode = ref(false);
 
-// const groups = [
-//     { id: 1, name: 'Admin'},
-//     { id: 2, name: 'CTV'},
-//     { id: 3, name: 'user'},
+const handleClose = () => {
+    dialogVisible.value = false;
+};
 
-// ]
+//form data
+const name = ref('');
+const isAdmin = ref(false);
 
 //open add modal
 const openAddModal = () => {
@@ -206,22 +171,14 @@ const openEditModal = (group) => {
 
     //fill data group
     id.value = group.id;
-    title.value = group.title;
-    original_group.value = group.original_url;
-    custom_halfback.value = group.short_code;
-    endDate.value = group.expires_at;
 }
 
 
 // add group method
 const Addgroup = async () => {
     const formData = new FormData(); // tạo form
-
-    formData.append('title', title.value);
-    formData.append('original_group', original_group.value);
-    formData.append('short_code', halfback.value);
-    formData.append('endDate', endDate.value);
-
+    formData.append('name', name.value);
+    formData.append('isAdmin', isAdmin.value === true ? 1 : 0);
 
     try {
         await router.post('groups/store', formData, {
@@ -233,6 +190,8 @@ const Addgroup = async () => {
                         position: 'top',
                         showConfirmButton: false,
                         title: page.props.flash.success,
+                        timer: 5000,
+                        timerProgressBar: true,
                     });
 
                     dialogVisible.value = false;
@@ -246,6 +205,8 @@ const Addgroup = async () => {
                     Swal.fire({
                         toast: true,
                         icon: 'error',
+                        timer: 5000,
+                        timerProgressBar: true,
                         position: 'top',
                         showConfirmButton: false,
                         title: 'Đã xảy ra lỗi!',
@@ -265,10 +226,8 @@ const Addgroup = async () => {
 
 // reset data after add
 const resetFormData = () => {
-    title.value = '';
-    original_group.value = '';
-    custom_halfback.value = '';
-    endDate.value = [];
+    name.value = '';
+
 }
 
 
@@ -279,10 +238,7 @@ const id = ref('');
 const Updategroup = async () => {
     const formData = new FormData(); // tạo form
 
-    formData.append('title', title.value);
-    formData.append('original_group', original_group.value);
-    formData.append('short_code', halfback.value);
-    formData.append('endDate', endDate.value);
+    formData.append('name', name.value);
     formData.append("_method", 'PUT');
     //
 
@@ -328,10 +284,10 @@ const Updategroup = async () => {
 
 
 //delete group
-const deletegroup = (group, index) => {
+const deleteGroup = (group, index) => {
     Swal.fire({
-        title: 'Bạn có muốn xóa group?',
-        text: "Không thể hoàn tác hành động này!",
+        title: 'Bạn có muốn xóa nhóm <br>"'+group.name+'" ?',
+        text: "Hành động này sẽ xóa tất cả thành viên trong nhóm!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -342,18 +298,39 @@ const deletegroup = (group, index) => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                router.delete('groups/destroy/' + group.id, group, {
+                router.delete('groups/destroy/' + group.id, {
                     onSuccess: (page) => {
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            position: 'top',
-                            showConfirmButton: false,
-                            title: page.props.flash.success,
-                        });
-                        this.delete(product, index);
-                    }
+                        if (page.props.flash.success) {
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                position: 'top',
+                                showConfirmButton: false,
+                                title: page.props.flash.success,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
 
+                            dialogVisible.value = false;
+                        }
+                    },
+                    onError: (errors) => {
+                        if (errors) {
+                            let errorMessages = Object.values(errors).flat().join('<br>');
+
+                            Swal.fire({
+                                toast: true,
+                                icon: 'error',
+                                position: 'top',
+                                showConfirmButton: false,
+                                title: 'Đã xảy ra lỗi!',
+                                html: errorMessages,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            dialogVisible.value = false;
+                        }
+                    },
                 });
             } catch (e) {
                 console.log(e);
@@ -365,3 +342,14 @@ const deletegroup = (group, index) => {
 
 
 </script>
+
+<style lang="scss" scoped>
+
+::v-deep(.el-dialog) {
+  @apply bg-white dark:bg-gray-900;
+}
+
+::v-deep(.el-dialog__title) {
+  @apply text-gray-900 dark:text-white;
+}
+</style>

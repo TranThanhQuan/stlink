@@ -77,10 +77,10 @@ import { Link, router } from '@inertiajs/vue3';
 
 
 const props = defineProps({
-    group: Array,
+    group: Object,
     modules: Array,
-    roleListArr: Array,
-    roleArr: Array,
+    roleListArr: Object,
+    roleArr: Object,
 });
 
 
@@ -111,9 +111,6 @@ const PermissionGroup = async () => {
                         showConfirmButton: false,
                         title: page.props.flash.success,
                     });
-
-                    dialogVisible.value = false;
-                    resetFormData();
                 }
             },
             onError: (errors) => {
@@ -128,9 +125,6 @@ const PermissionGroup = async () => {
                         title: 'Đã xảy ra lỗi!',
                         html: errorMessages,
                     });
-                    dialogVisible.value = false;
-                    resetFormData();
-
                 }
             },
         });

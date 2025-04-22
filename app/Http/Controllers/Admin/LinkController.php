@@ -202,62 +202,6 @@ class LinkController extends Controller
             ->limit(1)
             ->pluck('country')->first();
 
-        // // thống kê lượt click 7 ngày gần nhất trả về dạng mảng nếu không có dữ liệu thì trả về giá trị = 0
-        // $clicks = ClickStatistic::select(\DB::raw('DATE(created_at) as date'), \DB::raw('count(*) as total'))
-        //     ->where('link_id', $link->id)
-        //     ->where('created_at', '>=', now()->subDays(7))
-        //     ->groupBy('date')
-        //     ->orderBy('date', 'asc')
-        //     ->pluck('total', 'date');
-        // $dates = [];
-        // for ($i = 6; $i >= 0; $i--) {
-        //     $date = now()->subDays($i)->format('Y-m-d');
-        //     $dates[$date] = $clicks->get($date, 0);
-        // }
-        // $link->clicks = $dates;
-
-        // thống kê lượt click theo hệ điều hành có trong database trả về dạng mảng nếu không có dữ liệu thì trả về giá trị = 0
-        // $oses = ClickStatistic::select('os', \DB::raw('count(*) as total'))
-        //     ->where('link_id', $link->id)
-        //     ->groupBy('os')
-        //     ->orderBy('total', 'desc')
-        //     ->pluck('total', 'os');
-        // $link->oses = $oses;
-
-        // thống kê lượt click theo quốc gia có trong database trả về dạng mảng nếu không có dữ liệu thì trả về giá trị = 0
-        // $countries = ClickStatistic::select('country', \DB::raw('count(*) as total'))
-        //     ->where('link_id', $link->id)
-        //     ->groupBy('country')
-        //     ->orderBy('total', 'desc')
-        //     ->pluck('total', 'country');
-        // $link->countries = $countries;
-
-
-
-        ////////////////////////////////
-         // Kiểm tra định dạng ngày tháng
-        // $validator = Validator::make($request->all(), [
-        //     'startDate' => 'required|date',
-        //     'endDate' => 'required|date|after_or_equal:startDate',
-        // ], [
-        //     'startDate.required' => 'Vui lòng nhập ngày bắt đầu.',
-        //     'endDate.required' => 'Vui lòng nhập ngày kết thúc.',
-        //     'endDate.after_or_equal' => 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.',
-        // ]);
-
-    //    Nếu có lỗi, quay lại trang trước với lỗi
-        // if ($validator->fails()) {
-        //     return response()->json(['error' => $validator->errors()], 422);
-        // }
-
-        // // Nếu có lỗi, quay lại trang trước với lỗi
-        // if ($validator->fails()) {
-        //     return response()->json(['error' => $validator->errors()], 422);
-        // }
-
-        // Lấy dữ liệu từ request
-
-
         $startDate = $request->startDate
             ? Carbon::parse($request->startDate)
             : Carbon::now()->subDays(7); // Lấy 7 ngày, tính cả hôm nay
@@ -267,10 +211,6 @@ class LinkController extends Controller
             : Carbon::now(); // Hôm nay
 
         $type = $request->type ?? 'clicks';
-
-
-        // lấy dữ liệu thống kê theo loại và thời gian bắt đầu và kết thúc nếu không có dữ liệu thì trả về ngày và giá trị = 0
-
 
 
         // kiểm tra loại (clicks, os, country) và lấy dữ liệu tương ứng

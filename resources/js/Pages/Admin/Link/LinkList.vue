@@ -104,7 +104,7 @@
                 <div
                     class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                     <div class="w-full md:w-1/2">
-                        <form class="flex items-center">
+                        <!-- <form class="flex items-center">
                             <label for="simple-search" class="sr-only">Tìm kiếm</label>
                             <div class="relative w-full">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -119,7 +119,7 @@
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     placeholder="Tìm kiếm" required="">
                             </div>
-                        </form>
+                        </form> -->
                     </div>
                     <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                         <button @click="openAddModal" type="button"
@@ -357,7 +357,6 @@ const props = defineProps({
 
 
 const isPublic = ref(true);
-const isExpired = ref(true);
 
 const domain = ref(window.location.hostname);
 

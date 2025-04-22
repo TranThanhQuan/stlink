@@ -113,7 +113,7 @@
                 <div
                     class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                     <div class="w-full md:w-1/2">
-                        <form class="flex items-center">
+                        <!-- <form class="flex items-center">
                             <label for="simple-search" class="sr-only">Tìm kiếm</label>
                             <div class="relative w-full">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -128,7 +128,7 @@
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     placeholder="Tìm kiếm" required="">
                             </div>
-                        </form>
+                        </form> -->
                     </div>
                     <div
                         class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
@@ -232,15 +232,9 @@
                                     <span v-else class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">Không hoạt động</span>
                                 </td>
 
-
-                                <!-- <td class="px-4 py-3">{{ formatDate(user.created_at) }}</td> -->
-
-
-
-
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <!-- Nút Dropdown -->
-                                    <button :id="`${user.id}-dropdown-button`"
+                                    <button v-if="user.id !== 1" :id="`${user.id}-dropdown-button`"
                                         :data-dropdown-toggle="`${user.id}-dropdown`"
                                         class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
                                         type="button">
@@ -252,7 +246,7 @@
                                     </button>
 
                                     <!-- Dropdown Menu -->
-                                    <div :id="`${user.id}-dropdown`"
+                                    <div v-if="user.id !== 1" :id="`${user.id}-dropdown`"
                                         class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                                         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                             :aria-labelledby="`${user.id}-dropdown-button`">
@@ -564,8 +558,8 @@ const UpdateUser = async () => {
 const deleteUser = (user, index) => {
     console.log(user);
     Swal.fire({
-        title: 'Bạn có muốn xóa '+user.name+'?',
-        text: "Không thể hoàn tác hành động này!",
+        title: 'Bạn có muốn xóa <br>'+user.name+'?',
+        text: 'Hành động này sẽ xóa tất cả liên kết thuộc về "'+user.name+'"!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

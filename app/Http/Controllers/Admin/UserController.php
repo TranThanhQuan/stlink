@@ -71,7 +71,6 @@ class UserController extends Controller
                 return redirect()->route('admin.users.index')
                 ->withErrors($validator);
         }
-
         // Tạo mới người dùng
         $user = new User();
         $user->name = $request->name;

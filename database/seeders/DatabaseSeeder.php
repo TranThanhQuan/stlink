@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 
         // Tạo Group: Admin
         $adminGroupId = DB::table('groups')->insertGetId([
-            'name' => 'Admin',
+            'name' => 'Super Admin',
             'user_id' => 1,
             'permissions' => json_encode([
                 "users" => ["view", "add", "edit", "delete"],
