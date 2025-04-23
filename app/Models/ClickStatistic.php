@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ClickStatistic extends Model {
 
     use HasFactory;
-    protected $fillable = ['link_id', 'ip_address', 'os', 'country', 'browser', 'referrer', 'platform'];
+    protected $fillable = ['link_id','user_id', 'ip_address', 'os', 'country', 'browser', 'referrer', 'platform'];
 
     // public $timestamps = false;
 

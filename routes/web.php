@@ -1,14 +1,19 @@
 <?php
 
 use Inertia\Inertia;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\LinkController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\GroupController;
+use App\Http\Controllers\User\UserAuthController;
+use App\Http\Controllers\User\UserLinkController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\User\UserDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,18 +28,48 @@ use App\Http\Controllers\Admin\AdminAuthController;
 
 
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+
+// Route::get('/', function () {
+//     return Inertia::render('Home', []);
+// })->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| User Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+
+
+Route::middleware(['auth', 'user'])->prefix('user')->group(function () {
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+
+    // link
+    Route::get('/links', [UserLinkController::class, 'index'])->name('user.links.index');
+    Route::post('/links/store', [UserLinkController::class, 'store'])->name('user.links.store');
+    Route::put('/links/update/{id}', [UserLinkController::class, 'update'])->name('user.links.update');
+    Route::delete('/links/destroy/{id}', [UserLinkController::class, 'destroy'])->name('user.links.destroy');
+    Route::get('/links/view/{id}', [UserLinkController::class, 'view'])->name('user.links.view');
+
+    // user
+    Route::get('/infor', [UserController::class, 'index'])->name('user.infor.index');
+
+    Route::post('/user/store', [UserController::class, 'store'])->name('user.user.store');
+    Route::put('/user/update/{id}', [UserController::class, 'update'])->name('user.user.update');
+    Route::delete('/user/destroy/{id}', [UserController::class, 'destroy'])->name('user.user.destroy');
+    Route::get('/user/view/{id}', [UserController::class, 'view'])->name('user.user.view');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::group(['middleware' => 'redirectUser'],function () {
+    Route::get('dang-nhap', [UserAuthController::class, 'showLoginForm'])->name('user.login');
+    Route::post('dang-nhap', [UserAuthController::class, 'login'])->name('user.login.post');
+    Route::post('logout', [UserAuthController::class, 'logout'])->name('user.logout');
+});
+
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -55,7 +90,7 @@ Route::middleware('auth')->group(function () {
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // link
     Route::get('/links', [LinkController::class, 'index'])->name('admin.links.index');
@@ -65,11 +100,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/links/view/{id}', [LinkController::class, 'view'])->name('admin.links.view');
 
     // user
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::post('/users/store', [UserController::class, 'store'])->name('admin.users.store');
-    Route::put('/users/update/{id}', [UserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/users/destroy/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    Route::get('/users/view/{id}', [UserController::class, 'view'])->name('admin.users.view');
+    Route::get('/users', [AdminController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/store', [AdminController::class, 'store'])->name('admin.users.store');
+    Route::put('/users/update/{id}', [AdminController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/destroy/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/users/view/{id}', [AdminController::class, 'view'])->name('admin.users.view');
 
     //group
     Route::get('/groups', [GroupController::class, 'index'])->name('admin.groups.index');

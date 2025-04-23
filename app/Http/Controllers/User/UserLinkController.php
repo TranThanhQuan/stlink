@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\User;
 
 use Carbon\Carbon;
 use App\Models\Link;
@@ -13,24 +13,27 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
-class LinkController extends Controller
+class UserLinkController extends Controller
 {
-
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $user_id = $user->id;
+
         $page = $request->input('page', 1);
 
         $links = Link::with('user')
+            ->where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'page', $page) // Truyền tham số page vào paginate
             ->through(function ($link) {
                 return [
                     'id' => $link->id,
                     'title' => $link->title,
-                    'user_id' => $link->user_id,
-                    'user' => [
-                        'name' => $link->user->name ?? null,
-                    ],
+                    // 'user_id' => $link->user_id,
+                    // 'user' => [
+                    //     'name' => $link->user->name ?? null,
+                    // ],
                     'short_code' => $link->short_code,
                     'original_url' => $link->original_url,
                     'expires_at' => $link->expires_at,
@@ -63,7 +66,7 @@ class LinkController extends Controller
 
 
         $userPrefix = auth()->user()->prefix;
-        return Inertia::render('Admin/Link/Index', [
+        return Inertia::render('User/Link/Index', [
             'links' => $links,
             'statusCounts' => $statusCounts,
             'userPrefix' => $userPrefix,
@@ -71,9 +74,18 @@ class LinkController extends Controller
     }
 
 
-
-
     public function store(Request $request) {
+
+        $user_id = auth()->user()->id;
+
+        // đếm số lượng link của user
+        $linkCount = Link::where('user_id', $user_id)->count();
+
+        if ($linkCount >= 50) {
+            return redirect()->route('user.links.index')
+                ->withErrors(['link' => 'Bạn đã đạt giới hạn tối đa 50 link.']);
+        }
+
         // Validate dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -92,10 +104,9 @@ class LinkController extends Controller
 
         // Nếu có lỗi, quay lại trang trước với lỗi
         if ($validator->fails()) {
-            return redirect()->route('admin.links.index')
+            return redirect()->route('user.links.index')
                 ->withErrors($validator);
         }
-
 
         $url = $request->original_link;
         if (strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0) {
@@ -108,13 +119,13 @@ class LinkController extends Controller
         $link->user_id = auth()->user()->id;
         $link->short_code = $request->short_code;
         $link->original_url = $url;
-        $status = filter_var($request->status, FILTER_VALIDATE_BOOLEAN); // ép về boolean trước khi kiểm tra
+        $status = filter_var($request->status, FILTER_VALIDATE_BOOLEAN);
         $link->status = $status;
         $link->expires_at = Carbon::now()->addDays(30)->format('Y-m-d H:i');
 
         $link->save();
 
-        return redirect()->route('admin.links.index')->with('success', 'Thêm link thành công!');
+        return redirect()->route('user.links.index')->with('success', 'Thêm link thành công!');
     }
 
 
@@ -145,7 +156,7 @@ class LinkController extends Controller
 
         // Nếu có lỗi, quay lại trang trước với lỗi
         if ($validator->fails()) {
-            return redirect()->route('admin.links.index')
+            return redirect()->route('user.links.index')
                 ->withErrors($validator);
         }
 
@@ -163,15 +174,13 @@ class LinkController extends Controller
 
         $link->save();
 
-        return redirect()->route('admin.links.index')->with('success', 'Cập nhật link thành công!');
+        return redirect()->route('user.links.index')->with('success', 'Cập nhật link thành công!');
     }
 
     public function destroy($id){
         $link = Link::findOrFail($id);
         $link->delete();
-        return redirect()->route('admin.links.index')->with('success', 'Xóa link thành công!');
-        // return redirect()->back()->with('success', 'Xóa link thành công!');
-
+        return redirect()->route('user.links.index')->with('success', 'Xóa link thành công!');
     }
 
 
@@ -193,6 +202,8 @@ class LinkController extends Controller
             ->orderBy('total', 'desc')
             ->limit(1)
             ->pluck('os')->first();
+        $link->top_os ? null : $link->top_os = 'Không có dữ liệu';
+
 
         // lấy top quốc gia (country) click nhiều nhất
         $link->top_country = ClickStatistic::select('country', \DB::raw('count(*) as total'))
@@ -201,6 +212,7 @@ class LinkController extends Controller
             ->orderBy('total', 'desc')
             ->limit(1)
             ->pluck('country')->first();
+        $link->top_country ? null : $link->top_country = 'Không có dữ liệu';
 
         $startDate = $request->startDate
             ? Carbon::parse($request->startDate)
@@ -272,7 +284,6 @@ class LinkController extends Controller
                     }
                 }
 
-
                 $link->os = $osData;
 
 
@@ -285,130 +296,11 @@ class LinkController extends Controller
                 ->pluck('total', 'country');
             $link->country = $countries;
         }else {
-            return redirect()->route('admin.links.index')->with('errors', 'Không có dữ liệu phù hợp!');
+            return redirect()->route('user.links.index')->with('errors', 'Không có dữ liệu phù hợp!');
         }
 
-        if ($request->type){
-            // dd($request->all());
-        }
-
-        return Inertia::render('Admin/Link/LinkDetail', [
+        return Inertia::render('User/Link/LinkDetail', [
                 'link' => $link
             ]);
     }
-
-    public function tracking(Request $request, $short_code)
-    {
-        $link = Link::where('short_code', $short_code)->first();
-
-        if (!$link) {
-            return Inertia::render('Errors/NotFound')->toResponse($request)->setStatusCode(404);
-        }
-
-        // Kiểm tra xem link đã hết hạn hay chưa
-        if ($link->expires_at && Carbon::parse($link->expires_at)->isPast()) {
-            // return response()->json(['error' => 'Link đã hết hạn.'], 410);
-            return Inertia::render('Errors/Expired')->toResponse($request)->setStatusCode(410);
-
-
-        }
-        // Kiểm tra xem link có bị khóa hay không
-        if ($link->status == 0) {
-            return Inertia::render('Errors/NotFound')->toResponse($request)->setStatusCode(404);
-        }
-
-        // Lấy User Agent
-        $agent = $request->header('User-Agent');
-
-        // Phân tích hệ điều hành, trình duyệt và nền tảng
-        $os = $this->detectOS($agent);
-        $browser = $this->detectBrowser($agent);
-        $platform = $this->detectPlatform($agent);
-
-        // Lấy IP và quốc gia
-        $ip = $request->ip();
-        $country = $this->getCountryFromIP($ip);
-
-        // Lưu thông tin vào cơ sở dữ liệu
-        $link->clickStatistics()->create([
-            'ip_address' => $ip,
-            'referrer' => $request->header('referer'),
-            'os' => $os,
-            'browser' => $browser,
-            'platform' => $platform,
-            'country' => $country,
-        ]);
-
-        // Chuyển hướng đến link gốc
-        return redirect()->away($link->original_url);
-    }
-
-
-
-
-
-    private function detectOS($agent)
-    {
-        $oses = [
-            'Windows' => 'Windows',
-            'Macintosh' => 'Mac OS',
-            'iPhone' => 'ios',
-            'Android' => 'Android',
-            'Linux' => 'Linux',
-        ];
-
-        foreach ($oses as $key => $os) {
-            if (stripos($agent, $key) !== false) {
-                return $os;
-            }
-        }
-
-        return 'Unknown';
-    }
-
-    private function detectBrowser($agent)
-    {
-        $browsers = [
-            'Chrome' => 'Chrome',
-            'Firefox' => 'Firefox',
-            'Safari' => 'Safari',
-            'Edge' => 'Edge',
-            'Opera' => 'Opera',
-            'MSIE' => 'Internet Explorer',
-        ];
-
-        foreach ($browsers as $key => $browser) {
-            if (stripos($agent, $key) !== false) {
-                return $browser;
-            }
-        }
-
-        return 'Unknown';
-    }
-
-    private function detectPlatform($agent)
-    {
-        if (preg_match('/mobile/i', $agent)) {
-            return 'Mobile';
-        } elseif (preg_match('/tablet/i', $agent)) {
-            return 'Tablet';
-        } else {
-            return 'Desktop';
-        }
-    }
-
-    private function getCountryFromIP($ip)
-        {
-            try {
-                $response = Http::get("http://ip-api.com/json/{$ip}?fields=country");
-                if ($response->ok()) {
-                    return $response->json('country') ?? 'Unknown';
-                }
-            } catch (\Exception $e) {
-                return 'Unknown';
-            }
-
-            return 'Unknown';
-        }
-
 }

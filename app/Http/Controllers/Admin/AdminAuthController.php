@@ -12,41 +12,47 @@ use Illuminate\Support\Facades\Hash;
 class AdminAuthController extends Controller
 {
     public function showLoginForm(){
-        // hiển thị giao diện login bằng vue (/resource/js/Pages/Admin/Auth)
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            //kiểm tra quyền admin
+            if ($user->group && $user->group->isAdmin) {
+                return redirect()->route('admin.dashboard');
+            } else {
+                //nếu không phải admin thì chuyển về trang chủ
+                dd('Bạn không có quyền truy cập');
+            }
+        }
         return Inertia::render('Admin/Auth/Login');
     }
 
 
     public function login(Request $request)
     {
-        // Tìm user theo email
         $user = User::where('email', $request->email)->first();
 
-        // Kiểm tra nếu user không tồn tại hoặc không có quyền admin
-        if (!$user || !$user->group || !$user->group->isAdmin) {
-
-            dd('Bạn không có quyền truy cập');
-            return redirect()->route('admin.login')->with('error', 'Bạn không có quyền truy cập');
+        // Kiểm tra nếu không tìm thấy người dùng
+        if (!$user) {
+            return back()->with('error', 'Thông tin đăng nhập không đúng. Mã lỗi: 1001');
         }
 
-        // Xác thực thông tin đăng nhập
-        // if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-        //     return redirect()->route('admin.dashboard');
-        // }
-
-        if (Hash::check($request->password, $user->password)) {
-            // Mật khẩu đúng
-            Auth::login($user); // Đăng nhập người dùng thủ công
-            return redirect()->route('admin.dashboard');
-        }else{
-            // Mật khẩu sai
-            dd($request->all());
-            return redirect()->route('admin.login')->with('error', 'Mật khẩu không đúng');
+        // Kiểm tra nếu không có nhóm người dùng hoặc nhóm không phải là admin
+        if (!$user->group || !$user->group->isAdmin) {
+            return back()->with('error', 'Thông tin đăng nhập không đúng. Mã lỗi: 1002');
         }
 
+        // Kiểm tra mật khẩu không chính xác
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->with('error', 'Thông tin đăng nhập không đúng. Mã lỗi: 1003');
+        }
 
-        return redirect()->route('admin.login')->with('error', 'Thông tin đăng nhập không hợp lệ');
+        // Đăng nhập thành công
+        Auth::login($user);
+        return redirect()->route('admin.dashboard');
     }
+
+
+
 
 
 

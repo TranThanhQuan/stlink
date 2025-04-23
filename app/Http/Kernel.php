@@ -2,7 +2,9 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\redirectUser;
 use App\Http\Middleware\redirectAdmin;
+use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\CheckPermission;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -72,6 +74,8 @@ class Kernel extends HttpKernel
 
         // middleware kiểm tra quyền admin
         'admin' => AdminMiddleware::class,
+        'user' => UserMiddleware::class,
         'redirectAdmin' => redirectAdmin::class,
+        'redirectUser' => redirectUser::class,
     ];
 }

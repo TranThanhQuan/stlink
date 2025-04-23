@@ -208,8 +208,7 @@
                             <tr v-for="user in users" :key="user.id" class="border-b dark:border-gray-700">
                                 <td class="px-4 py-3">#{{ user.id }}</td>
                                 <th scope="row"
-                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{
-                                    truncate(user.name)}}</th>
+                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ user.name }}</th>
 
                                 <td class="px-4 py-3 text-blue-900 font-bold dark:text-white">
                                     <a :href="user.original_url" target="_blank" rel="noopener noreferrer">

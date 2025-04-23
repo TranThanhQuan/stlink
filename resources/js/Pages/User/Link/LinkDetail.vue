@@ -1,5 +1,5 @@
 <template>
-    <AdminLayout>
+    <UserLayout>
 
 
         <!-- link info -->
@@ -222,12 +222,12 @@
         </div>
 
         <!-- end nav tab -->
-    </AdminLayout>
+    </UserLayout>
 
 </template>
 
 <script setup>
-import AdminLayout from '../Components/AdminLayout.vue'
+import UserLayout from '../Components/UserLayout.vue'
 import { ref, onMounted, watch, computed } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { endOfMonth, endOfYear, startOfMonth, startOfYear, subMonths } from 'date-fns';
@@ -299,7 +299,7 @@ const UpdateChart = async (type) => {
 
 
     try {
-        await router.post('/admin/links/view/' + props.link.id, formData, {
+        await router.post('/user/links/view/' + props.link.id, formData, {
             preserveScroll: true,
             onSuccess: (page) => {
                 const chartData = page.props.link[type];

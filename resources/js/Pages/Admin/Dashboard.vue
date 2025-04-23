@@ -1,7 +1,7 @@
 <template>
 
     <AdminLayout>
-        <div class="m-10 grid gap-5 sm:grid-cols-4 mx-auto max-w">
+        <!-- <div class="m-10 grid gap-5 sm:grid-cols-4 mx-auto max-w">
             <div class="px-4 py-6 shadow-lg shadow-blue-100 dark:shadow-black rounded-lg flex items-center">
                 <div class="mr-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 rounded-xl bg-rose-50 p-4 text-rose-300"
@@ -99,80 +99,187 @@
                     <span class="text-xs text-gray-400">+4.9%</span>
                 </div>
             </div>
+        </div> -->
+
+        <div class="my-5 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
+                    Tổng lượt truy cập
+                </h5>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ data.totalClicks }}</p>
+            </div>
+
+
+            <div
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 lg:mx-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
+                    Top hệ điều hành
+                </h5>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{data.topOs}}</p>
+            </div>
+
+            <div
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 lg:mr-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
+                    Quốc gia hàng đầu
+                </h5>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ data.topCountry }}</p>
+            </div>
+
+            <div
+                class="w-full lg:w-1/4 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
+                    Tổng liên kết
+                </h5>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ data.totalLinks }}</p>
+            </div>
         </div>
 
 
-        <!-- chart -->
-        <div class=" w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
-            <div class="flex justify-between">
-                <div>
-                    <h5 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">32.4k</h5>
-                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">Users this week</p>
-                </div>
-                <div
-                    class="flex items-center px-2.5 py-0.5 text-base font-semibold text-green-500 dark:text-green-500 text-center">
-                    12%
-                    <svg class="w-3 h-3 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 10 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 13V1m0 0L1 5m4-4 4 4" />
-                    </svg>
-                </div>
+        <!-- end card list -->
+
+        <!-- nav tab -->
+
+        <div class="w-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div class="sm:hidden">
+                <label for="tabs" class="sr-only">Select tab</label>
+                <select id="tabs"
+                    class="bg-gray-50 border-0 border-b border-gray-200 text-gray-900 text-sm rounded-t-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option>Lượt truy cập</option>
+                    <option>Hệ điều hành</option>
+                    <option>Quốc gia</option>
+                </select>
             </div>
-            <div id="area-chart"></div>
-            <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
-                <div class="flex justify-between items-center pt-5">
-                    <!-- Button -->
-                    <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown"
-                        data-dropdown-placement="bottom"
-                        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
-                        type="button">
-                        Last 7 days
-                        <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 10 6">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 4 4 4-4" />
-                        </svg>
-                    </button>
-                    <!-- Dropdown menu -->
-                    <div id="lastDaysdropdown"
-                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdownDefaultButton">
-                            <li>
-                                <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</a>
-                            </li>
-                            <li>
-                                <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</a>
-                            </li>
-                            <li>
-                                <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last
-                                    7 days</a>
-                            </li>
-                            <li>
-                                <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last
-                                    30 days</a>
-                            </li>
-                            <li>
-                                <a href="#"
-                                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last
-                                    90 days</a>
-                            </li>
-                        </ul>
+            <ul class="hidden text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg sm:flex dark:divide-gray-600 dark:text-gray-400 rtl:divide-x-reverse"
+                id="fullWidthTab" data-tabs-toggle="#fullWidthTabContent" role="tablist">
+                <li class="w-full">
+                    <button id="clicks-tab" @click.prevent="UpdateChart('clicks')" data-tabs-target="#clicks" type="button" role="tab" aria-controls="clicks"
+                        aria-selected="true"
+                        class="inline-block w-full p-4 rounded-ss-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">Lượt
+                        truy cập</button>
+                </li>
+                <li class="w-full">
+                    <button id="operating-system-tab" @click.prevent="UpdateChart('os')" data-tabs-target="#operating-system" type="button" role="tab"
+                        aria-controls="operating-system" aria-selected="false"
+                        class="inline-block w-full p-4 bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">Hệ
+                        điều hành</button>
+                </li>
+                <li class="w-full">
+                    <button id="nation-tab" @click.prevent="UpdateChart('country')" data-tabs-target="#nation" type="button" role="tab" aria-controls="nation"
+                        aria-selected="false"
+                        class="inline-block w-full p-4 rounded-se-lg bg-gray-50 hover:bg-gray-100 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-600">Quốc
+                        gia</button>
+                </li>
+            </ul>
+            <div id="fullWidthTabContent" class="border-t border-gray-200 dark:border-gray-600">
+                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="clicks" role="tabpanel"
+                    aria-labelledby="clicks-tab">
+                    <!-- chart clicks-->
+                    <div v-apex-tooltip-style class="w-full mx-auto bg-white rounded-lg shadow dark:bg-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Thống kê lượt truy cập</h2>
+                        </div>
+
+                        <div>
+                            <form  @submit.prevent="UpdateChart('clicks')">
+                                <div class="flex items-center justify-between mb-4">
+                                    <!-- date picker -->
+                                    <VueDatePicker v-model="date" range multi-calendars :preset-dates="presetDates" auto-apply
+                                        locale="vi" :format="format">VueDatePicker>
+                                        <template #preset-date-range-button="{ label, value, presetDate }">
+                                            <span role="button" :tabindex="0" @click="presetDate(value)"
+                                                @keyup.enter.prevent="presetDate(value)"
+                                                @keyup.space.prevent="presetDate(value)">
+                                                {{ label }}
+                                            </span>
+                                        </template>
+                                    </VueDatePicker>
+
+                                    <button type="submit"
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 ml-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Chọn</button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="h-[300px]">
+                            <apexchart height="100%" type="bar" :options="chartOptions" :series="chartSeries" />
+
+                        </div>
                     </div>
-                    <a href="#"
-                        class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2">
-                        Users Report
-                        <svg class="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 9 4-4-4-4" />
-                        </svg>
-                    </a>
+                </div>
+
+                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="operating-system"
+                    role="tabpanel" aria-labelledby="operating-system-tab">
+                    <!-- chart opereting system -->
+                    <div v-apex-tooltip-style class="w-full mx-auto bg-white rounded-lg shadow dark:bg-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Thống kê hệ điều hành</h2>
+                        </div>
+
+                        <div>
+                            <form  @submit.prevent="UpdateChart('os')">
+                                <div class="flex items-center justify-between mb-4">
+                                    <!-- date picker -->
+                                    <VueDatePicker v-model="date" range multi-calendars :preset-dates="presetDates" auto-apply
+                                        locale="vi" :format="format">VueDatePicker>
+                                        <template #preset-date-range-button="{ label, value, presetDate }">
+                                            <span role="button" :tabindex="0" @click="presetDate(value)"
+                                                @keyup.enter.prevent="presetDate(value)"
+                                                @keyup.space.prevent="presetDate(value)">
+                                                {{ label }}
+                                            </span>
+                                        </template>
+                                    </VueDatePicker>
+
+                                    <button type="submit"
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 ml-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Chọn</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="h-[300px]">
+                                <apexchart height="100%" type="area" :options="chartOptions" :series="chartSeries" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="nation" role="tabpanel"
+                    aria-labelledby="nation-tab">
+                    <!-- chart nation -->
+                    <div v-apex-tooltip-style class="w-full mx-auto bg-white rounded-lg shadow dark:bg-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Thống kê quốc gia</h2>
+                        </div>
+
+                        <div>
+                            <form  @submit.prevent="UpdateChart('country')">
+                                <div class="flex items-center justify-between mb-4">
+                                    <!-- date picker -->
+                                    <VueDatePicker v-model="date" range multi-calendars :preset-dates="presetDates" auto-apply
+                                        locale="vi" :format="format">VueDatePicker>
+                                        <template #preset-date-range-button="{ label, value, presetDate }">
+                                            <span role="button" :tabindex="0" @click="presetDate(value)"
+                                                @keyup.enter.prevent="presetDate(value)"
+                                                @keyup.space.prevent="presetDate(value)">
+                                                {{ label }}
+                                            </span>
+                                        </template>
+                                    </VueDatePicker>
+
+                                    <button type="submit"
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 ml-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Chọn</button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="h-[300px]">
+                            <!-- Pie Chart -->
+                            <apexchart height="300" type="pie" :options="chartOptions" :series="chartSeries"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,107 +290,243 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import ApexCharts from "apexcharts";
-import { initFlowbite } from "flowbite";
 import AdminLayout from "./Components/AdminLayout.vue";
+import { ref, onMounted } from 'vue';
+import { Link, router } from '@inertiajs/vue3';
+import { endOfMonth, endOfYear, startOfMonth, startOfYear, subMonths } from 'date-fns';
 
-
+const date = ref();
+const chartOptions = ref({});
+const chartSeries = ref([]);
 
 onMounted(() => {
-    initFlowbite();
+    const endDate = new Date();
+    const startDate = new Date(new Date().setDate(endDate.getDate() - 7));
+    date.value = [startDate, endDate];
+    UpdateChart('clicks');
+})
 
 
-    const options = {
-        chart: {
-            height: "100%",
-            maxWidth: "100%",
-            type: "area",
-            fontFamily: "Inter, sans-serif",
-            dropShadow: {
-                enabled: true,
-            },
-            toolbar: {
-                show: true,
-            },
+const presetDates = ref([
+  { label: 'Hôm nay', value: [new Date(), new Date()] },
+  {
+    label: '7 ngày trước',
+    value: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()],
+  },
+  { label: 'Tháng này',
+    value: [startOfMonth(new Date()), endOfMonth(new Date())] },
+  {
+    label: 'Tháng trước',
+    value: [startOfMonth(subMonths(new Date(), 1)), endOfMonth(subMonths(new Date(), 1))],
+  },
 
-        },
-        tooltip: {
-            enabled: false,
-            theme: "dark",
-            style: {
-                fontSize: "12px",
-                fontFamily: "Inter, sans-serif",
-                color: "#ffffff"
-            },
-            y: {
-                formatter: function (value) {
-                    console.log("Tooltip Value:", value);
-                    return value.toLocaleString() + " users";
+]);
+
+
+
+const format = (dates) => {
+  if (!dates || dates.length !== 2) return '';
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  return `Từ ${formatDate(dates[0])} đến ${formatDate(dates[1])}`;
+};
+
+const props = defineProps({
+  data: Object
+});
+
+
+const UpdateChart = async (type) => {
+    chartOptions.value = {};
+    chartSeries.value = [];
+
+    const formData = new FormData();
+    formData.append('startDate', date.value[0].toISOString().split('T')[0]);
+    formData.append('endDate', date.value[1].toISOString().split('T')[0]);
+    formData.append('type', type);
+    formData.append('_method', 'GET');
+
+
+    try {
+        await router.post('/admin/dashboard', formData, {
+            preserveScroll: true,
+            onSuccess: (page) => {
+                const chartData = page.props.data[type];
+                let typeChart = 'bar';
+                if(type == 'os'){
+                    typeChart = 'area';
+                } else if(type == 'country'){
+                    typeChart = 'pie';
                 }
-            }
-        },
 
-
-
-
-        fill: {
-            type: "gradient",
-            gradient: {
-                opacityFrom: 0.8, // Tăng độ trong suốt
-                opacityTo: 0.5,   // Không quá mờ
-                shade: "#1C64F2",
-                gradientToColors: ["#1C64F2"],
+                const { chartOptions: newOptions, series: newSeries } = createChart(typeChart, chartData);
+                chartOptions.value = newOptions.value;
+                chartSeries.value = newSeries.value;
             },
-        },
-        dataLabels: {
-            enabled: true,
-        },
-        stroke: {
-            width: 3, // Giảm độ dày của đường
-        },
+            onError: (errors) => {
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat().join('<br>');
 
-        grid: {
-            show: false,
-            strokeDashArray: 4,
-            padding: {
-                left: 2,
-                right: 2,
-                top: 0
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        position: 'top',
+                        showConfirmButton: false,
+                        title: 'Đã xảy ra lỗi!',
+                        html: errorMessages,
+                        timer: 5000,
+                        timerProgressBar: true,
+                    });
+                }
             },
-        },
-        series: [
-            {
-                name: "New users",
-                data: [6510, 6418, 6456, 6526, 6356, 6456],
-                color: "#1A56DB",
-            },
-        ],
+        });
+    } catch (e) {
+        // console.log(e);
+    }
+};
+
+function createChart(type, dataObject) {
+    const categories = Object.keys(dataObject);
+
+  const commonTooltip = {
+    y: {
+      formatter: function (val) {
+        return val + ' lượt';
+      }
+    }
+  };
+
+  const baseChartOptions = {
+    chart: {
+      type: type,
+      fontFamily: "Inter, sans-serif",
+      stacked: type === 'area',
+      events: {
+        updated: function (chartContext, config) {
+        //   console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} Chart updated`);
+          applyTooltipStyles();
+        }
+      }
+    },
+    tooltip: commonTooltip
+  };
+
+  let chartOptions = {};
+  let series = [];
+
+  switch (type) {
+    case 'bar':
+      chartOptions = {
+        ...baseChartOptions,
         xaxis: {
-            categories: ['01 February', '02 February', '03 February', '04 February', '05 February', '06 February'],
-            labels: {
-                show: true,
-            },
-            axisBorder: {
-                show: true,
-            },
-            axisTicks: {
-                show: true,
-            },
+          categories: categories.reverse()
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'
+          }
+        }
+      };
+      series = [
+        {
+            name: 'Lượt truy cập',
+          data: Object.values(dataObject).reverse()
+        }
+      ];
+      break;
+
+    case 'area':
+      // Tạo danh sách tên hệ điều hành từ giá trị đầu tiên
+      const sample = dataObject[categories[0]];
+      const osNames = Object.keys(sample);
+
+      // Duyệt qua từng hệ điều hành để tạo series tương ứng
+      series = osNames.map(os => ({
+            name: os,
+            data: categories.map(date => dataObject[date][os] || 0)
+        }));
+
+
+      chartOptions = {
+        ...baseChartOptions,
+        xaxis: {
+          categories: categories,
+          title: {
+            text: 'Ngày'
+          }
         },
         yaxis: {
-            show: true,
+          title: {
+            text: 'Lượt truy cập'
+          }
         },
+        legend: {
+          position: 'top'
+        },
+        dataLabels: {
+          enabled: false
+        }
+      };
+      break;
+
+    case 'pie':
+      chartOptions = {
+        ...baseChartOptions,
+        labels: Object.keys(dataObject)
+      };
+      series = Object.values(dataObject);
+
+      break;
+
+    default:
+      console.error("Unsupported chart type: " + type);
+      return null;
+  }
+
+  return {
+    chartOptions: ref(chartOptions),
+    series: ref(series)
+  };
+}
+
+function applyTooltipStyles() {
+    let isDark = false;
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        isDark = true;
+
+    } else {
+       isDark = false;
     }
 
-    if (document.getElementById("area-chart") && typeof ApexCharts !== 'undefined') {
+  const textColor = isDark ? 'rgb(129 129 129)' : '#222';
+  const labelColor =  'var(--color-gray-500)';
+  const titleColor = '#333';
 
-    const chart = new ApexCharts(document.getElementById("area-chart"), options);
-    chart.render();
+  document.querySelectorAll('.apexcharts-tooltip-text-y-label').forEach(el => {
+    el.style.cssText += `font-size:13px!important;color:${labelColor}!important;`;
+  });
+
+  document.querySelectorAll('.apexcharts-tooltip-text-y-value').forEach(el => {
+    el.style.cssText += `font-size:13px!important;color:#222!important;`;
+  });
+
+  document.querySelectorAll('.apexcharts-tooltip-title').forEach(el => {
+    el.style.cssText += `font-size:14px!important;font-weight:600!important;color:${titleColor}!important;`;
+  });
+
+  document.querySelectorAll('.apexcharts-xaxistooltip-text, .apexcharts-canvas .apexcharts-legend-text').forEach(el => {
+    el.style.cssText += `font-size:13px!important;fill:#fff!important;font-weight:500!important; color:${textColor}!important;`;
+  });
 }
 
 
-});
 
 </script>
 

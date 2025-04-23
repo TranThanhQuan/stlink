@@ -1,79 +1,46 @@
 <template>
-    <AdminLayout>
 
+    <UserLayout>
 
-        <!-- link info -->
-        <div
-            class="my-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
-
-            <div class="w-full lg:w-2/3">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    Tiêu đề: {{ link.title }}
-                </h5>
-                <h4 class="text-2xl dark:text-white">
-                    Link gốc:
-                    <a :href="link.original_url" class="text-blue-500" target="_blank" rel="noopener noreferrer">
-                        {{ link.original_url }}
-                    </a>
-                </h4>
-
-                <h4 class="font-normal text-gray-700 dark:text-gray-400">
-                    Link rút gọn:
-                    <a class="text-blue-500" target="_blank" rel="noopener noreferrer"
-                    :href="`https://${domain}/${link.short_code}`">
-                        https://{{ domain }}/{{ link.short_code }}
-                    </a>
-                </h4>
-
-                <h4 class="font-normal text-gray-700 dark:text-gray-400">Người tạo: {{ link.username }}</h4>
-                <h4 class="font-normal text-gray-700 dark:text-gray-400">Thời gian tạo: {{ link.created_at_format }}</h4>
-                <h4 class="font-normal text-gray-700 dark:text-gray-400">Thời gian hết hạn: {{ link.expires_at }}</h4>
-
-                <h4 v-if="link.expired" class="font-normal text-red-700 dark:text-red-400">
-                    Trạng thái: Hết hạn
-                </h4>
-
-                <h4 v-else class="font-normal text-gray-700 dark:text-gray-400">
-                    Trạng thái: {{ link.status ? 'Công khai' : 'Riêng tư' }}
-                </h4>
-            </div>
-
-            <div class="w-full lg:w-1/3 flex justify-center lg:justify-end">
-                <img :src="qrcode" alt="QR Code" class="max-w-full h-auto" />
-            </div>
-        </div>
-
-        <!-- end link info -->
-
-        <!-- card list -->
         <div class="my-5 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+
             <div
-                class="w-full lg:w-1/3 mb-4 lg:mb-0 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 lg:mr-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
+                    Số liên kết
+                </h5>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ data.totalLinksByUser }}</p>
+            </div>
+
+            <div
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 lg:mr-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
                     Tổng lượt truy cập
                 </h5>
-                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ link.total_clicks }}</p>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ data.totalClicks }}</p>
             </div>
 
+
             <div
-                class="w-full lg:w-1/3 mb-4 lg:mb-0 lg:mx-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 lg:mr-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
                     Top hệ điều hành
                 </h5>
-                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{link.top_os}}</p>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{data.topOs}}</p>
             </div>
 
             <div
-                class="w-full lg:w-1/3 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                class="w-full lg:w-1/4 mb-4 lg:mb-0 lg:mr-5 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 text-center dark:text-white">
                     Quốc gia hàng đầu
                 </h5>
-                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ link.top_country }}</p>
+                <p class="text-xl text-gray-700 text-center dark:text-gray-400">{{ data.topCountry }}</p>
             </div>
+
+
         </div>
 
 
-        <!-- end card list -->
 
         <!-- nav tab -->
 
@@ -140,7 +107,6 @@
 
 
                         <div class="h-[300px]">
-                            <!-- <apexchart height="100%" type="bar" :options="chartOptionsBar" :series="seriesBar" /> -->
                             <apexchart height="100%" type="bar" :options="chartOptions" :series="chartSeries" />
 
                         </div>
@@ -221,18 +187,16 @@
             </div>
         </div>
 
-        <!-- end nav tab -->
-    </AdminLayout>
 
+    </UserLayout>
 </template>
 
+
 <script setup>
-import AdminLayout from '../Components/AdminLayout.vue'
-import { ref, onMounted, watch, computed } from 'vue';
+import UserLayout from "./Components/UserLayout.vue";
+import { ref, onMounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { endOfMonth, endOfYear, startOfMonth, startOfYear, subMonths } from 'date-fns';
-import { useQRCode } from '@vueuse/integrations/useQRCode'
-
 
 const date = ref();
 const chartOptions = ref({});
@@ -261,6 +225,8 @@ const presetDates = ref([
 
 ]);
 
+
+
 const format = (dates) => {
   if (!dates || dates.length !== 2) return '';
 
@@ -275,18 +241,10 @@ const format = (dates) => {
 };
 
 const props = defineProps({
-  link: Object
+  data: Object
 });
 
 
-const domain = ref(window.location.hostname);
-
-// QR code
-const qrcode = useQRCode(`https://${domain.value}/${props.link.short_code}`);
-
-
-
-// viết function lấy dữ liệu dùng form submit truyền vào loại chart và ngày bắt đầu ngày kết thúc
 const UpdateChart = async (type) => {
     chartOptions.value = {};
     chartSeries.value = [];
@@ -299,10 +257,10 @@ const UpdateChart = async (type) => {
 
 
     try {
-        await router.post('/admin/links/view/' + props.link.id, formData, {
+        await router.post('/user/dashboard', formData, {
             preserveScroll: true,
             onSuccess: (page) => {
-                const chartData = page.props.link[type];
+                const chartData = page.props.data[type];
                 let typeChart = 'bar';
                 if(type == 'os'){
                     typeChart = 'area';
@@ -335,10 +293,6 @@ const UpdateChart = async (type) => {
         // console.log(e);
     }
 };
-
-
-
-
 
 function createChart(type, dataObject) {
     const categories = Object.keys(dataObject);
@@ -445,10 +399,6 @@ function createChart(type, dataObject) {
   };
 }
 
-
-
-
-
 function applyTooltipStyles() {
     let isDark = false;
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -481,22 +431,7 @@ function applyTooltipStyles() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 
-<style scoped>
 
 
-</style>

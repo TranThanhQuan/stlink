@@ -6,9 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\User;
 
-class AdminMiddleware
+class UserMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,13 +17,12 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next , $guard = null): Response
     {
 
-        if (Auth::check() && Auth::user()->group->isAdmin == 1){
+
+        if (Auth::check() && Auth::user()->group->isAdmin == 0){
             return $next($request);
         }
 
         return redirect()->route('home')->with('error', 'Access Denied, you are not an administrator');
-        // return redirect()
-
 
     }
 }
