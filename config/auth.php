@@ -40,7 +40,17 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins', // tên provider mới
+        ],
+        'users' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -65,11 +75,12 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class, //admin vẫn dùng chung bảng users, thì anh có thể dùng lại model User
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------

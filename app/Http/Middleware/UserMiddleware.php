@@ -16,8 +16,10 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next , $guard = null): Response
     {
-
-
+        // nếu chưa đăng nhập thì chuyển về trang login
+        if (!Auth::check()) {
+            return redirect()->route('user.login');
+        }
         if (Auth::check() && Auth::user()->group->isAdmin == 0){
             return $next($request);
         }

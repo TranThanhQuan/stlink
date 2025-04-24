@@ -12,6 +12,7 @@ class ClickStatisticsTableSeeder extends Seeder
         // Thêm dữ liệu mẫu vào bảng click_statistics
         ClickStatistic::create([
             'link_id' => 1, // Liên kết với link "Google"
+            'user_id' => 1,
             'ip_address' => '192.168.1.1',
             'user_agent' => 'Mozilla/5.0',
             'referrer' => 'google',
@@ -22,6 +23,7 @@ class ClickStatisticsTableSeeder extends Seeder
         ]);
         ClickStatistic::create([
             'link_id' => 2, // Liên kết với link "Facebook"
+            'user_id' => 1,
             'ip_address' => '192.168.1.2',
             'user_agent' => 'Mozilla/5.0',
             'referrer' => 'facebook',

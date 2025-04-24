@@ -28,7 +28,20 @@ class UserController extends Controller
         ]);
     }
 
-
+    public function home(){
+        $user = auth()->user();
+        if ($user) {
+            if ($user->group && $user->group->isAdmin) {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('user.dashboard');
+            }
+        } else {
+            // Người dùng chưa đăng nhập
+            // trả về 404
+            return Inertia::render('Errors/NotFound')->toResponse(request())->setStatusCode(404);
+        }
+    }
 
 
 }

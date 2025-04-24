@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/vue3';
             <!-- <Link href="/">
                 <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
             </Link> -->
-            <h1 class="flex items-center text-3xl font-extrabold">Đăng nhập quản trị</h1>
+            <!-- <h1 class="flex items-center text-3xl font-extrabold">Đăng nhập quản trị</h1> -->
         </div>
 
         <div

@@ -331,6 +331,7 @@ class LinkController extends Controller
 
         // Lưu thông tin vào cơ sở dữ liệu
         $link->clickStatistics()->create([
+            'user_id' => $link->user_id,
             'ip_address' => $ip,
             'referrer' => $request->header('referer'),
             'os' => $os,

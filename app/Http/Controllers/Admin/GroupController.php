@@ -61,6 +61,34 @@ class GroupController extends Controller
         return redirect()->route('admin.groups.index')->with('success', 'Thêm nhóm thành công!');
     }
 
+    public function update($groupId, Request $request) {
+        // Validate dữ liệu đầu vào
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:groups,name,' . $groupId,
+            'isAdmin' => 'boolean',
+        ], [
+            'name.required' => 'Vui lòng nhập tiêu đề.',
+            'name.string' => 'Tiêu đề phải là một chuỗi.',
+            'name.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
+            'name.unique' => 'Tiêu đề đã tồn tại.',
+            'isAdmin.boolean' => 'Giá trị quyền quản trị không hợp lệ',
+        ]);
+
+        // Nếu có lỗi, quay lại trang trước với lỗi
+        if ($validator->fails()) {
+            return redirect()->route('admin.groups.index')
+                ->withErrors($validator);
+        }
+
+        // Cập nhật thông tin nhóm
+        $group = Group::findOrFail($groupId);
+        $group->name = $request->name;
+        $group->isAdmin = $request->isAdmin;
+        $group->save();
+
+        return redirect()->route('admin.groups.index')->with('success', 'Cập nhật nhóm thành công!');
+    }
+
     public function permission($id){
         $group = Group::findOrFail($id);
 

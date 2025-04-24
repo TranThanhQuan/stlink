@@ -29,9 +29,8 @@ use App\Http\Controllers\User\UserDashboardController;
 
 
 
-// Route::get('/', function () {
-//     return Inertia::render('Home', []);
-// })->name('home');
+Route::get('/', [UserController::class, 'home'])->name('home');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +41,7 @@ use App\Http\Controllers\User\UserDashboardController;
 
 
 
-Route::middleware(['auth', 'user'])->prefix('user')->group(function () {
+Route::middleware(['user'])->prefix('user')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
 
     // link
@@ -89,7 +88,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // link
@@ -109,7 +108,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     //group
     Route::get('/groups', [GroupController::class, 'index'])->name('admin.groups.index');
     Route::post('/groups/store', [GroupController::class, 'store'])->name('admin.groups.store');
-    // Route::put('/groups/update/{id}', [GroupController::class, 'update'])->name('admin.groups.update');
+    Route::put('/groups/update/{id}', [GroupController::class, 'update'])->name('admin.groups.update');
     Route::delete('/groups/destroy/{id}', [GroupController::class, 'destroy'])->name('admin.groups.destroy');
     Route::get('/groups/permission/{id}', [GroupController::class, 'permission'])->name('admin.groups.permission');
     Route::put('/groups/permission/{id}', [GroupController::class, 'updatePermission'])->name('admin.groups.updatePermission');

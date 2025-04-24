@@ -16,12 +16,14 @@ class redirectUser
      */
     public function handle(Request $request, Closure $next , $guard = null): Response
     {
-
-
-        if (Auth::guard($guard)->check() && optional(Auth::user())->role !== 'admin') {
+        // nếu đã login và là admin thì chuyển về trang admin
+        if (Auth::guard($guard)->check() && optional(Auth::user()->group->isAdmin == 1)) {
+            return redirect()->route('admin.dashboard');
+        }
+        // nếu đã login và không phải admin thì chuyển về trang user
+        if (Auth::guard($guard)->check() && optional(Auth::user()->group->isAdmin == 0)) {
             return redirect()->route('user.dashboard');
         }
-
 
         return $next($request);
     }

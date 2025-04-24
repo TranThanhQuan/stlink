@@ -39,15 +39,15 @@ class UserAuthController extends Controller
             return back()->with('error', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên để biết thêm thông tin.');
         }
 
-
         // Đăng nhập thành công
         Auth::login($user);
         return redirect()->route('user.dashboard');
     }
 
     public function logout(Request $request){
+
         Auth::guard('web')->logout();
-        $request->session()->invalidate();  // hủy session hiện tại
-        return redirect()->route('login');
+        $request->session()->invalidate();
+        return redirect()->route('home1');
     }
 }

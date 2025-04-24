@@ -14,7 +14,7 @@ class AdminAuthController extends Controller
     public function showLoginForm(){
         if (Auth::check()) {
             $user = Auth::user();
-
+            dd('abc');
             //kiểm tra quyền admin
             if ($user->group && $user->group->isAdmin) {
                 return redirect()->route('admin.dashboard');

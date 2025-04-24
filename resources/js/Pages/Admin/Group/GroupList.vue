@@ -37,7 +37,7 @@
                 </div>
 
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ editMode ? 'Lưu' : 'Thêm' }}</button>
             </form>
         </el-dialog>
 
@@ -71,9 +71,11 @@
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th scope="col" class="px-4 py-3">ID</th>
+                                <!-- <th scope="col" class="px-4 py-3">ID</th> -->
                                 <th scope="col" class="px-4 py-3">Tên nhóm</th>
+                                <th scope="col" class="px-4 py-3 text-center">Quyền quản trị</th>
                                 <th scope="col" class="px-4 py-3">Người tạo</th>
+
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
                                 </th>
@@ -81,10 +83,21 @@
                         </thead>
                         <tbody>
                             <tr v-for="group in groups" :key="group.id" class="border-b dark:border-gray-700">
-                                <td class="px-4 py-3">#{{ group.id }}</td>
+                                <!-- <td class="px-4 py-3">#{{ group.id }}</td> -->
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ group.name }}</th>
 
+                                <th scope="row"
+                                    class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center" >
+
+                                    <span v-if="group.isAdmin" class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">
+                                        Có
+                                    </span>
+                                    <span v-else class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">
+                                        Không
+                                    </span>
+
+                                </th>
                                 <th scope="row"
                                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ group.user.name }}</th>
 
@@ -107,9 +120,15 @@
                                         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
                                             :aria-labelledby="`${group.id}-dropdown-button`">
 
-                                            <li>
+                                            <!-- <li>
                                                 <a :href="route('admin.groups.permission', { id: group.id })"
                                                     class="block w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left">Chỉnh sửa</a>
+                                            </li> -->
+                                            <li>
+                                                <button @click="openEditModal(group)"
+                                                    class="block w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left">
+                                                    Chỉnh sửa
+                                                </button>
                                             </li>
                                         </ul>
                                         <div class="py-1">
@@ -171,6 +190,9 @@ const openEditModal = (group) => {
 
     //fill data group
     id.value = group.id;
+    name.value = group.name;
+    isAdmin.value = group.isAdmin === 1 ? true : false;
+    console.log(isAdmin.value );
 }
 
 
@@ -239,6 +261,8 @@ const Updategroup = async () => {
     const formData = new FormData(); // tạo form
 
     formData.append('name', name.value);
+    formData.append('isAdmin', isAdmin.value === true ? 1 : 0);
+
     formData.append("_method", 'PUT');
     //
 

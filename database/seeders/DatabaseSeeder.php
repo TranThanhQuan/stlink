@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 
         // Tạo Group: Admin
         $adminGroupId = DB::table('groups')->insertGetId([
-            'name' => 'Super Admin',
+            'name' => 'Admin',
             'user_id' => 1,
             'permissions' => json_encode([
                 "users" => ["view", "add", "edit", "delete"],
@@ -97,6 +97,7 @@ class DatabaseSeeder extends Seeder
             DB::table('click_statistics')->insert([
                 [
                     'link_id' => $linkId,
+                    'user_id' => 1,
                     'ip_address' => '192.168.1.1',
                     'referrer' => 'google',
                     'os' => 'Windows',
@@ -108,6 +109,7 @@ class DatabaseSeeder extends Seeder
                 ],
                 [
                     'link_id' => $linkId,
+                    'user_id' => 1,
                     'ip_address' => '192.168.1.2',
                     'referrer' => 'facebook',
                     'os' => 'ios',

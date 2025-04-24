@@ -32,6 +32,8 @@ class UserDashboardController extends Controller
             ->orderBy('total', 'desc')
             ->limit(1)
             ->pluck('os')->first();
+
+        $topOs ? null : $topOs = 'Không có dữ liệu';
         $data->topOs = $topOs;
 
         // lấy top quốc gia (country) click nhiều nhất theo user
@@ -41,6 +43,8 @@ class UserDashboardController extends Controller
             ->orderBy('total', 'desc')
             ->limit(1)
             ->pluck('country')->first();
+
+        $topCountry ? null : $topCountry = 'Không có dữ liệu';
         $data->topCountry = $topCountry;
 
         // lấy tổng số link của user
